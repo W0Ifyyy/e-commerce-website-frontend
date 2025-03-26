@@ -1,6 +1,6 @@
 export default function ProductCard({ id, name, desc, price, imageUrl }: any) {
   return (
-    <div className="bg-white shadow rounded-lg p-4">
+    <div className="bg-white shadow-lg rounded-lg p-4">
       <img
         src={imageUrl}
         alt={name}
