@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import ProductCard from "@/components/ProductCard";
+import ProductCard from "@/components/mainPage/ProductCard";
 
 interface IProduct {
   id: number;
@@ -31,18 +31,21 @@ export default function BestsellerSection() {
     fetchBestsellers();
   }, []);
 
-  if (loading) return <div>Loading bestsellers...</div>;
-  if (error) return <div>Error loading bestsellers.</div>;
-
   return (
     <section className="p-15 bg-gray-50" id="bestsellers">
       <h2 className="text-3xl font-bold text-center mb-6">
         Our bestsellers 🔥
       </h2>
-      <div className="flex gap-20 items-center justify-center">
-        {bestsellers.map((product) => (
-          <ProductCard key={product.id} {...product} />
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+        {loading ? (
+          <div>Loading bestsellers...</div>
+        ) : error ? (
+          <div>Error loading bestsellers.</div>
+        ) : (
+          bestsellers
+            .slice(0, 6) // Only for now, todo: add bestsellers to the backend
+            .map((product) => <ProductCard key={product.id} {...product} />)
+        )}
       </div>
     </section>
   );

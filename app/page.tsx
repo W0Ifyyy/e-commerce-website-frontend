@@ -1,22 +1,18 @@
 "use client";
 
-import BestsellerSection from "@/components/BestSellerSection";
-import CategoriesSection from "@/components/CategoriesSection";
-import Footer from "@/components/Footer";
-import Hero from "@/components/Hero";
-import Navbar from "@/components/Navbar";
-import ProductCard from "@/components/ProductCard";
+import BestsellerSection from "@/components/mainPage/BestSellerSection";
+import CategoriesSection from "@/components/mainPage/CategoriesSection";
+import Footer from "@/components/rootLayout/Footer";
+import Hero from "@/components/mainPage/Hero";
+import Navbar from "@/components/rootLayout/Navbar";
+import ProductCard from "@/components/mainPage/ProductCard";
 
 export default function Home() {
   return (
-    <div>
-      <Navbar />
-      <main>
-        <Hero />
-        <BestsellerSection />
-        <CategoriesSection />
-      </main>
-      <Footer />
-    </div>
+    <main>
+      <Hero />
+      <BestsellerSection />
+      <CategoriesSection />
+    </main>
   );
 }

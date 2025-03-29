@@ -1,11 +1,14 @@
+import Link from "next/link";
 import React from "react";
 
 export default function Navbar() {
   return (
     <nav className="w-full shadow py-4 px-4 flex justify-between items-center">
-      <h1 className="text-2xl font-bold roboto-mono-300 text-orange-500">
-        Buyzaar
-      </h1>
+      <Link href="/" className="flex items-center gap-2">
+        <h1 className="text-2xl font-bold roboto-mono-300 text-orange-500">
+          Buyzaar
+        </h1>
+      </Link>
       <SearchBar />
       <NavLinks />
     </nav>

@@ -4,6 +4,24 @@ export interface IProduct {
   description: string;
   price: number;
   imageUrl: string;
+  category: number;
+}
+
+export interface ICategoryDetails {
+  id: number;
+  name: string;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
+  products: IProduct[];
+}
+
+export interface ICategory {
+  id: number;
+  name: string;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface BestsellerCarouselProps {
