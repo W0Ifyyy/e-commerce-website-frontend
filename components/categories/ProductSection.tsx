@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { IProduct } from "@/utils/interfaces";
+import { useCart } from "@/utils/CartContext";
+import { addToCart, updateCartItem } from "@/utils/cartUtils";
 
 interface ProductsSectionProps {
   products: IProduct[];
@@ -40,7 +42,7 @@ export default function ProductsSection({ products }: ProductsSectionProps) {
         <button
           disabled={currentPage === 1}
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+          className="px-4 py-2 bg-orange-500 text-white rounded disabled:opacity-50"
         >
           Previous
         </button>
@@ -52,7 +54,7 @@ export default function ProductsSection({ products }: ProductsSectionProps) {
           onClick={() =>
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
+          className="px-4 py-2 bg-orange-500 text-white rounded disabled:opacity-50"
         >
           Next
         </button>
@@ -74,8 +76,14 @@ export function CategoryProductCard({
   price: number;
   imageUrl: string;
 }) {
+  const { cart, updateCart } = useCart();
+  function handleAddToCart() {
+    addToCart(id);
+    updateCart();
+  }
+
   return (
-    <div key={id} className="flex bg-white shadow-lg rounded-lg p-4">
+    <div key={id} className="flex bg-white shadow-lg rounded-lg py-4 px-8">
       {/* Left: Product Image */}
       <div className="w-1/3 relative">
         <img
@@ -88,10 +96,14 @@ export function CategoryProductCard({
       <div className="w-2/3 flex flex-col justify-between pl-4">
         <div>
           <h3 className="text-xl font-semibold">{name}</h3>
+          <p className="text-lg ">${price.toFixed(2)}</p>
         </div>
-        <div>
-          <p className="text-lg font-bold">${price.toFixed(2)}</p>
-          <button className="mt-2 bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 transition-colors">
+        <hr className="text-gray-300"></hr>
+        <div className="flex justify-end">
+          <button
+            className="mt-2 border border-orange-400 text-black  py-2 px-4 rounded hover:bg-orange-500 hover:text-white transition-colors"
+            onClick={handleAddToCart}
+          >
             Add to Cart
           </button>
         </div>

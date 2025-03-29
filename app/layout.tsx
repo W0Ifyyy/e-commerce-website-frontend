@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/rootLayout/Navbar";
 import Footer from "@/components/rootLayout/Footer";
+import { CartProvider } from "@/utils/CartContext";
 
 export const metadata: Metadata = {
   title: "Buyzaar",
@@ -16,9 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        {children}
-        <Footer />
+        <CartProvider>
+          <Navbar />
+          {children}
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

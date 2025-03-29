@@ -1,3 +1,5 @@
+"use client";
+import { useCart } from "@/utils/CartContext";
 import Link from "next/link";
 import React from "react";
 
@@ -30,6 +32,7 @@ export function SearchBar() {
   );
 }
 export function NavLinks() {
+  const { cart } = useCart();
   return (
     <ul className="flex gap-8">
       <li>
@@ -49,6 +52,7 @@ export function NavLinks() {
             />
           </svg>
         </button>
+        <span>{cart.length}</span>
       </li>
       <li>
         <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
