@@ -1,15 +1,6 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-
-export interface ICartItem {
-  id: number;
-  count: number;
-}
-
-interface CartContextType {
-  cart: ICartItem[];
-  updateCart: () => void;
-}
+import { CartContextType, ICartItem } from "./interfaces";
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 

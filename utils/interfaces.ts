@@ -27,3 +27,13 @@ export interface ICategory {
 export interface BestsellerCarouselProps {
   products: IProduct[];
 }
+
+export interface ICartItem {
+  id: number;
+  count: number;
+}
+
+export interface CartContextType {
+  cart: ICartItem[];
+  updateCart: () => void;
+}
