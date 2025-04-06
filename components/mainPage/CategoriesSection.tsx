@@ -5,6 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import BestsellerSection from "./BestSellerSection";
+import { getCategories } from "@/services/categories";
 
 export default function CategoriesSection() {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function CategoriesSection() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await axios.get("http://localhost:5000/category");
+        const response = await getCategories();
         const categories = response.data;
         console.log(response.data);
         setCategoriesData(categories);

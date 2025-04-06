@@ -1,8 +1,8 @@
 "use client";
+import api from "@/lib/axios";
 import { useCart } from "@/utils/CartContext";
 import { removeFromCart } from "@/utils/cartUtils";
 import { IProduct } from "@/utils/interfaces";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 
 export default function CartPage() {
@@ -32,7 +32,7 @@ export default function CartPage() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await axios.post(
+        const response = await api.post(
           "http://localhost:5000/products/all",
           cartIds
         );

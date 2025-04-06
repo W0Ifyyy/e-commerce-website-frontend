@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ProductCard from "@/components/mainPage/ProductCard";
+import { getBestSellers } from "@/services/products";
 
 interface IProduct {
   id: number;
@@ -20,7 +21,7 @@ export default function BestsellerSection() {
   useEffect(() => {
     async function fetchBestsellers() {
       try {
-        const response = await axios.get("http://localhost:5000/products");
+        const response = await getBestSellers();
         setBestsellers(response.data);
       } catch (err) {
         setError(true);

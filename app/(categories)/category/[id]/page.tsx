@@ -1,8 +1,8 @@
 "use client";
 
 import ProductsSection from "@/components/categories/ProductSection";
+import { getCategory } from "@/services/categories";
 import { ICategoryDetails } from "@/utils/interfaces";
-import axios from "axios";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -13,13 +13,15 @@ export default function CategoryProducts() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const params = useParams();
-  const categoryId = params.id;
+  const parsedId = parseInt(params.id as string, 10);
+  if (isNaN(parsedId)) {
+    throw new Error("Invalid category ID");
+  }
+  const categoryId = parsedId;
   useEffect(() => {
     async function fetchCategoryData() {
       try {
-        let response = await axios.get(
-          `http://localhost:5000/category/details/${categoryId}`
-        );
+        let response = await getCategory(categoryId);
         setCategoryData(response.data);
         console.log(response.data);
       } catch (error) {
