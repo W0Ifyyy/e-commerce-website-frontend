@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import ProductCard from "@/components/mainPage/ProductCard";
+import BestSellerProductCard from "@/components/mainPage/BestSellerProductCard";
 import { getBestSellers } from "@/services/products";
 
 interface IProduct {
@@ -45,7 +45,9 @@ export default function BestsellerSection() {
         ) : (
           bestsellers
             .slice(0, 6) // Only for now, todo: add bestsellers to the backend
-            .map((product) => <ProductCard key={product.id} {...product} />)
+            .map((product) => (
+              <BestSellerProductCard key={product.id} {...product} />
+            ))
         )}
       </div>
     </section>

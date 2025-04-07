@@ -9,12 +9,14 @@ export default function Hero() {
     setIsMounted(true);
   }, []);
 
-  if (!isMounted) return null; // Prevents hydration issues
+  if (!isMounted) return null;
 
   const scrollToNextSection = () => {
-    const nextSection = document.getElementById("bestsellers");
+    const nextSection = document.getElementById(
+      "bestsellers"
+    ) as HTMLElement | null;
     if (nextSection) {
-      nextSection.scrollIntoView({ behavior: "smooth" });
+      nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
