@@ -30,10 +30,21 @@ export interface BestsellerCarouselProps {
 
 export interface ICartItem {
   id: number;
-  count: number;
+  name: string;
+  price: number;
+  quantity: number;
 }
 
+// Make sure to update your CartContextType in interfaces.ts
 export interface CartContextType {
   cart: ICartItem[];
   updateCart: () => void;
+  addToCart: (item: ICartItem) => void;
+  removeFromCart: (itemId: number) => void;
+  updateQuantity: (itemId: number, quantity: number) => void;
+  clearCart: () => void;
+}
+
+export interface ProductPaginationProps {
+  products: IProduct[];
 }

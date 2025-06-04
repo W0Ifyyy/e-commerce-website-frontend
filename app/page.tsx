@@ -1,5 +1,3 @@
-"use client";
-
 import BestsellerSection from "@/components/mainPage/BestSellerSection";
 import CategoriesSection from "@/components/mainPage/CategoriesSection";
 import Hero from "@/components/mainPage/Hero";

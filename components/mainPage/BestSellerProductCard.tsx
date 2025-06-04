@@ -1,5 +1,5 @@
+"use client";
 import { useCart } from "@/utils/CartContext";
-import { addToCart } from "@/utils/cartUtils";
 
 export default function BestSellerProductCard({
   id,
@@ -8,11 +8,12 @@ export default function BestSellerProductCard({
   price,
   imageUrl,
 }: any) {
-  const { cart, updateCart } = useCart();
+  const { addToCart } = useCart();
+
   function handleAddToCart() {
     addToCart(id);
-    updateCart();
   }
+
   return (
     <div className="bg-white shadow-lg rounded-lg p-4">
       <img

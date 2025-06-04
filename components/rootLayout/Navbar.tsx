@@ -57,14 +57,18 @@ export function NavLinks() {
         </Link>
       </li>
       <li>
-        <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
-          Sign-in
-        </button>
+        <Link href={"/sign-in"} className="hover:cursor-pointer">
+          <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
+            Sign-in
+          </button>
+        </Link>
       </li>
       <li>
-        <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
-          Sign-up
-        </button>
+        <Link href={"/sign-up"} className="hover:cursor-pointer">
+          <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
+            Sign-up
+          </button>
+        </Link>
       </li>
     </ul>
   );

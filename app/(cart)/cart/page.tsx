@@ -1,51 +1,39 @@
 "use client";
 import api from "@/lib/axios";
 import { useCart } from "@/utils/CartContext";
-import { removeFromCart } from "@/utils/cartUtils";
 import { IProduct } from "@/utils/interfaces";
 import React, { useEffect, useState } from "react";
 
 export default function CartPage() {
-  const { cart, updateCart } = useCart();
-  const [cartItems, setCartItems] = useState(
-    localStorage.getItem("cart")
-      ? JSON.parse(localStorage.getItem("cart")!)
-      : []
-  );
-  const cartIds = cartItems.map(
-    (item: { id: string; count: number }) => item.id
-  );
-
-  function handleRemoveFromCart(id: number) {
-    removeFromCart(id);
-    updateCart();
-    setCartItems(
-      localStorage.getItem("cart")
-        ? JSON.parse(localStorage.getItem("cart")!)
-        : []
-    );
-  }
+  // Use the cart from context instead of localStorage
+  const { cart, removeFromCart } = useCart();
 
   const [products, setProducts] = useState<IProduct[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     async function fetchProducts() {
+      // Get product IDs from the cart context inside useEffect
+      const cartIds = cart.map((item) => item.id);
+
+      if (cartIds.length === 0) {
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await api.post(
-          "http://localhost:5000/products/all",
-          cartIds
-        );
-        console.log(response.data);
+        const response = await api.post("/products/all", cartIds);
         setProducts(response.data);
       } catch (error) {
         setError("Failed to fetch products");
       }
       setLoading(false);
     }
+
     fetchProducts();
-    console.log(products);
-  }, [cartIds]);
+  }, [cart]);
 
   return (
     <main>
@@ -75,7 +63,7 @@ export default function CartPage() {
                     <div className="flex gap-2">
                       <button
                         className="px-4 py-2 border border-orange-500 text-orange-500 rounded hover:bg-orange-100"
-                        onClick={() => handleRemoveFromCart(product.id)}
+                        onClick={() => removeFromCart(product.id)}
                       >
                         Remove from Cart
                       </button>
