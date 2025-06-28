@@ -4,8 +4,9 @@ import Link from "next/link";
 import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { IisLoggedIn } from "@/utils/interfaces";
 
-export default function Navbar() {
+export default function Navbar({ isLoggedIn }: IisLoggedIn) {
   return (
     <nav className="w-full shadow py-4 px-4 flex justify-between items-center">
       <Link href="/" className="flex items-center gap-2">
@@ -14,7 +15,7 @@ export default function Navbar() {
         </h1>
       </Link>
       <SearchBar />
-      <NavLinks />
+      <NavLinks isLoggedIn={isLoggedIn} />
     </nav>
   );
 }
@@ -48,7 +49,7 @@ export function SearchBar() {
     </div>
   );
 }
-export function NavLinks() {
+export function NavLinks({ isLoggedIn }: IisLoggedIn) {
   const { cart } = useCart();
   return (
     <ul className="flex gap-8">
@@ -73,20 +74,26 @@ export function NavLinks() {
           <span>{cart.length}</span>
         </Link>
       </li>
-      <li>
-        <Link href={"/sign-in"} className="hover:cursor-pointer">
-          <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
-            Sign-in
-          </button>
-        </Link>
-      </li>
-      <li>
-        <Link href={"/sign-up"} className="hover:cursor-pointer">
-          <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
-            Sign-up
-          </button>
-        </Link>
-      </li>
+      {isLoggedIn ? (
+        <p>Logged in......</p>
+      ) : (
+        <>
+          <li>
+            <Link href={"/sign-in"} className="hover:cursor-pointer">
+              <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
+                Sign-in
+              </button>
+            </Link>
+          </li>
+          <li>
+            <Link href={"/sign-up"} className="hover:cursor-pointer">
+              <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
+                Sign-up
+              </button>
+            </Link>
+          </li>
+        </>
+      )}
     </ul>
   );
 }

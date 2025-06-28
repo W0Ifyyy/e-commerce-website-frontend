@@ -48,3 +48,7 @@ export interface CartContextType {
 export interface ProductPaginationProps {
   products: IProduct[];
 }
+
+export interface IisLoggedIn {
+  isLoggedIn: boolean;
+}
