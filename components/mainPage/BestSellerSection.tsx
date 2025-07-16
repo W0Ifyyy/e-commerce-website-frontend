@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
 import BestSellerProductCard from "@/components/mainPage/BestSellerProductCard";
 import { getBestSellers } from "@/services/products";
 
@@ -24,6 +23,7 @@ export default function BestsellerSection() {
         const response = await getBestSellers();
         setBestsellers(response.data);
       } catch (err) {
+        console.error(err);
         setError(true);
       } finally {
         setLoading(false);

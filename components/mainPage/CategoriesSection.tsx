@@ -16,7 +16,7 @@ export default async function CategoriesSection() {
         {categoriesData.map((category: ICategory) => (
           <Link
             key={category.id}
-            className="bg-white shadow rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
+            className="bg-white shadow rounded-lg mx-5 p-4 flex flex-col items-center justify-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
             href={`/category/${category.id}`}
           >
             {category.imageUrl ? (

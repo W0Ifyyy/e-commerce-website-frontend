@@ -4,19 +4,25 @@ import Link from "next/link";
 import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { IisLoggedIn } from "@/utils/interfaces";
 
-export default function Navbar({ isLoggedIn }: IisLoggedIn) {
+export default function Navbar() {
   return (
-    <nav className="w-full shadow py-4 px-4 flex justify-between items-center">
-      <Link href="/" className="flex items-center gap-2">
-        <h1 className="text-2xl font-bold roboto-mono-300 text-orange-500">
-          Buyzaar
-        </h1>
-      </Link>
-      <SearchBar />
-      <NavLinks isLoggedIn={isLoggedIn} />
-    </nav>
+    <>
+      <nav className="w-full shadow py-4 px-4 flex justify-between items-center">
+        <Link href="/" className="flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-bold roboto-mono-300 text-orange-500">
+            Buyzaar
+          </h1>
+        </Link>
+        <div className="hidden md:block">
+          <SearchBar />
+        </div>
+        <NavLinks />
+      </nav>
+      <div className="md:hidden w-full bg-neutral-50 shadow shadow-white py-3">
+        <SearchBar />
+      </div>
+    </>
   );
 }
 
@@ -31,17 +37,17 @@ export function SearchBar() {
   };
 
   return (
-    <div className="w-full flex justify-center items-center max-w-5xl mx-auto">
+    <div className="w-full flex justify-center items-center">
       <input
         type="text"
-        className="flex-grow border border-gray-200 py-2 px-4 rounded-l-lg h-10"
+        className="flex-grow border border-gray-200 py-2 px-4 md:rounded-l-lg h-10"
         placeholder="Search for products"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         onKeyDown={(e) => e.key === "Enter" && handleSearch()}
       />
       <button
-        className="bg-orange-300 text-white py-2 px-4 rounded-r-lg h-10 hover:bg-orange-400 hover:cursor-pointer transition-colors"
+        className="bg-orange-300 text-white py-2 px-4 sm:rounded-r-lg h-10 hover:bg-orange-400 hover:cursor-pointer transition-colors"
         onClick={handleSearch}
       >
         Search
@@ -49,12 +55,13 @@ export function SearchBar() {
     </div>
   );
 }
-export function NavLinks({ isLoggedIn }: IisLoggedIn) {
+export function NavLinks() {
   const { cart } = useCart();
+
   return (
     <ul className="flex gap-8">
       <li>
-        <Link href="/cart" className="hover:cursor-pointer">
+        <Link href="/cart" className="hover:cursor-pointer flex items-center">
           <button className="hover:cursor-pointer py-1 px-1 transition-colors border border-transparent">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -71,29 +78,24 @@ export function NavLinks({ isLoggedIn }: IisLoggedIn) {
               />
             </svg>
           </button>
-          <span>{cart.length}</span>
+          <span className="hidden sm:block">{cart.length}</span>
         </Link>
       </li>
-      {isLoggedIn ? (
-        <p>Logged in......</p>
-      ) : (
-        <>
-          <li>
-            <Link href={"/sign-in"} className="hover:cursor-pointer">
-              <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
-                Sign-in
-              </button>
-            </Link>
-          </li>
-          <li>
-            <Link href={"/sign-up"} className="hover:cursor-pointer">
-              <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer py-1 px-4 transition-colors">
-                Sign-up
-              </button>
-            </Link>
-          </li>
-        </>
-      )}
+
+      <li>
+        <Link href={"/sign-in"} className="hover:cursor-pointer">
+          <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer px-2 py-1 sm:px-4 transition-colors">
+            Sign-in
+          </button>
+        </Link>
+      </li>
+      <li>
+        <Link href={"/sign-up"} className="hover:cursor-pointer">
+          <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer px-2 py-1 sm:px-4 transition-colors">
+            Sign-up
+          </button>
+        </Link>
+      </li>
     </ul>
   );
 }
