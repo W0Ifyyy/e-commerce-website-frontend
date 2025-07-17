@@ -2,6 +2,7 @@
 import api from "@/lib/axios";
 import { useCart } from "@/utils/CartContext";
 import { IProduct } from "@/utils/interfaces";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 export default function CartPage() {
@@ -56,11 +57,14 @@ export default function CartPage() {
                   className="w-32 h-32 object-cover mr-4"
                 />
                 <div className="flex flex-col flex-1">
-                  <h2 className="text-xl font-semibold mb-2">{product.name}</h2>
-                  <p className="text-gray-600 mb-2">{product.description}</p>
-                  <div className="flex items-center justify-between mt-auto">
-                    <p className="text-lg font-bold">${product.price}</p>
-                    <div className="flex gap-2">
+                  <h2 className="text-xl font-semibold mb-2 text-center sm:text-left">
+                    {product.name} | ${product.price}
+                  </h2>
+                  <p className="text-gray-600 mb-2 text-center sm:text-left">
+                    {product.description}
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-center justify-between mt-auto">
+                    <div className="flex gap-2 flex-col sm:flex-row">
                       <button
                         className="px-4 py-2 border border-orange-500 text-orange-500 rounded hover:bg-orange-100"
                         onClick={() => removeFromCart(product.id)}
@@ -79,9 +83,11 @@ export default function CartPage() {
         ) : (
           <p className="text-lg text-gray-700">Your cart is currently empty.</p>
         )}
-        <button className="mt-4 px-6 py-2 border border-gray-400 text-gray-600 rounded hover:bg-gray-200">
-          Continue Shopping
-        </button>
+        <Link href={"/"}>
+          <button className="mt-4 px-6 py-2 border border-gray-400 text-gray-600 rounded hover:bg-gray-200">
+            Continue Shopping
+          </button>
+        </Link>
       </div>
     </main>
   );
