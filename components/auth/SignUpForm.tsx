@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignUpForm() {
@@ -15,6 +16,8 @@ export default function SignUpForm() {
     email: "",
     password: "",
   });
+
+  const router = useRouter();
 
   const validateUsername = () => {
     if (!user.name || user.name.length < 5) {
@@ -87,6 +90,7 @@ export default function SignUpForm() {
         user
       );
       console.log(results);
+      if (results.status === 201) router.push("/sign-in");
       return results;
     }
     submitForm();

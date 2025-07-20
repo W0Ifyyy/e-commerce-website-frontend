@@ -4,6 +4,8 @@ import Link from "next/link";
 import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { logout } from "@/utils/logout";
 
 export default function Navbar() {
   return (
@@ -56,10 +58,13 @@ export function SearchBar() {
   );
 }
 export function NavLinks() {
+  const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
   const { cart } = useCart();
+  const router = useRouter();
 
   return (
-    <ul className="flex gap-8">
+    <ul className="flex gap-8 items-center">
       <li>
         <Link href="/cart" className="hover:cursor-pointer flex items-center">
           <button className="hover:cursor-pointer py-1 px-1 transition-colors border border-transparent">
@@ -82,20 +87,56 @@ export function NavLinks() {
         </Link>
       </li>
 
-      <li>
-        <Link href={"/sign-in"} className="hover:cursor-pointer">
-          <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer px-2 py-1 sm:px-4 transition-colors">
-            Sign-in
-          </button>
-        </Link>
-      </li>
-      <li>
-        <Link href={"/sign-up"} className="hover:cursor-pointer">
-          <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer px-2 py-1 sm:px-4 transition-colors">
-            Sign-up
-          </button>
-        </Link>
-      </li>
+      {user === null ? (
+        <>
+          <li>
+            <Link href={"/sign-in"} className="hover:cursor-pointer">
+              <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer px-2 py-1 sm:px-4 transition-colors">
+                Sign-in
+              </button>
+            </Link>
+          </li>
+          <li>
+            <Link href={"/sign-up"} className="hover:cursor-pointer">
+              <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer px-2 py-1 sm:px-4 transition-colors">
+                Sign-up
+              </button>
+            </Link>
+          </li>
+        </>
+      ) : (
+        <li className="relative">
+          <div
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-8 h-8 rounded-full bg-black cursor-pointer"
+          ></div>
+          {isOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+              <Link
+                href="/profile"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Profile
+              </Link>
+              <Link
+                href="/settings"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Settings
+              </Link>
+              <button
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => {
+                  logout();
+                  router.push("/");
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </li>
+      )}
     </ul>
   );
 }
