@@ -2,27 +2,33 @@
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLoggedState } from "@/utils/LoggedStateContext";
 export default function LogInForm() {
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
 
+  const { setLoggedState } = useLoggedState();
+
   const router = useRouter();
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/auth/login",
-        user,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(response.data);
-      if (response.status === 201) router.push("/");
-    } catch (error) {
-      console.log(error);
+      await axios.post("http://localhost:5000/auth/login", user, {
+        withCredentials: true,
+      });
+
+      const profileRes = await axios.get("http://localhost:5000/auth/profile", {
+        withCredentials: true,
+      });
+
+      const profile = profileRes.data;
+
+      setLoggedState(true, profile.username, profile.userId);
+      router.push("/");
+    } catch (error: any) {
+      console.error("Login failed:", error?.response?.data || error.message);
     }
   };
   return (

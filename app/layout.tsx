@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/rootLayout/Navbar";
 import Footer from "@/components/rootLayout/Footer";
 import { CartProvider } from "@/utils/CartContext";
+import { LoggedStateProvider } from "@/utils/LoggedStateContext";
 
 export const metadata: Metadata = {
   title: "Buyzaar",
@@ -17,11 +18,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <CartProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </CartProvider>
+        <LoggedStateProvider>
+          <CartProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </CartProvider>
+        </LoggedStateProvider>
       </body>
     </html>
   );

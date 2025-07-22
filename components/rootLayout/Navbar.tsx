@@ -4,8 +4,7 @@ import Link from "next/link";
 import React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
-import { logout } from "@/utils/logout";
+import { useLoggedState } from "@/utils/LoggedStateContext";
 
 export default function Navbar() {
   return (
@@ -59,7 +58,7 @@ export function SearchBar() {
 }
 export function NavLinks() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
+  const { isLoggedIn, username, logout } = useLoggedState();
   const { cart } = useCart();
   const router = useRouter();
 
@@ -87,7 +86,7 @@ export function NavLinks() {
         </Link>
       </li>
 
-      {user === null ? (
+      {!isLoggedIn ? (
         <>
           <li>
             <Link href={"/sign-in"} className="hover:cursor-pointer">
@@ -116,7 +115,7 @@ export function NavLinks() {
                 href="/profile"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
-                Profile
+                Profile - {username}
               </Link>
               <Link
                 href="/settings"
