@@ -1,11 +1,19 @@
 "use client";
 import api from "@/lib/axios";
-import { useCart } from "@/utils/CartContext";
+import { CartProvider, useCart } from "@/utils/CartContext";
 import { IProduct } from "@/utils/interfaces";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 export default function CartPage() {
+  return (
+    <CartProvider>
+      <CartPageContent />
+    </CartProvider>
+  );
+}
+
+export function CartPageContent() {
   // Use the cart from context instead of localStorage
   const { cart, removeFromCart } = useCart();
 
@@ -28,6 +36,7 @@ export default function CartPage() {
         const response = await api.post("/products/all", cartIds);
         setProducts(response.data);
       } catch (error) {
+        console.error("Failed to fetch products:", error);
         setError("Failed to fetch products");
       }
       setLoading(false);
