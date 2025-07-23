@@ -27,6 +27,7 @@ export default function LogInForm() {
 
       setLoggedState(true, profile.username, profile.userId);
       router.push("/");
+      router.refresh();
     } catch (error: any) {
       console.error("Login failed:", error?.response?.data || error.message);
     }

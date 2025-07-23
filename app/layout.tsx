@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/rootLayout/Navbar";
 import Footer from "@/components/rootLayout/Footer";
-import { CartProvider } from "@/utils/CartContext";
-import { LoggedStateProvider } from "@/utils/LoggedStateContext";
+import { cookies } from "next/headers";
+import axios from "axios";
 
 export const metadata: Metadata = {
   title: "Buyzaar",
@@ -15,16 +15,34 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token");
+
+  let username = null;
+  let isLoggedIn = false;
+  if (accessToken) {
+    try {
+      const res = await axios.get("http://localhost:5000/auth/profile", {
+        headers: {
+          Cookie: `access_token=${accessToken.value}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
+        },
+      });
+      console.log(res.data, res.status);
+      if (res.status === 200) {
+        username = res.data.username;
+        isLoggedIn = true;
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  }
+
   return (
     <html lang="en">
       <body>
-        <LoggedStateProvider>
-          <CartProvider>
-            <Navbar />
-            {children}
-            <Footer />
-          </CartProvider>
-        </LoggedStateProvider>
+        <Navbar isLoggedIn={isLoggedIn} username={username} />
+        {children}
+        <Footer />
       </body>
     </html>
   );

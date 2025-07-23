@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/utils/CartContext";
-import { IProduct, ProductPaginationProps } from "@/utils/interfaces";
+import { ProductPaginationProps } from "@/utils/interfaces";
 
 export function ProductPagination({ products }: ProductPaginationProps) {
   const itemsPerPage = 10;
@@ -66,7 +66,6 @@ export default ProductPagination;
 function CategoryProductCard({
   id,
   name,
-  description,
   price,
   imageUrl,
 }: {

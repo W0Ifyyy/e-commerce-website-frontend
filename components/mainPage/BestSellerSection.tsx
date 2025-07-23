@@ -1,8 +1,6 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import BestSellerProductCard from "@/components/mainPage/BestSellerProductCard";
 import { getBestSellers } from "@/services/products";
+import { CartProvider } from "@/utils/CartContext";
 
 interface IProduct {
   id: number;
@@ -12,25 +10,20 @@ interface IProduct {
   imageUrl: string;
 }
 
-export default function BestsellerSection() {
-  const [bestsellers, setBestsellers] = useState<IProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+export default async function BestsellerSection() {
+  let bestsellers: IProduct[] = [];
+  let loading: boolean = true;
+  let error: boolean = false;
 
-  useEffect(() => {
-    async function fetchBestsellers() {
-      try {
-        const response = await getBestSellers();
-        setBestsellers(response.data);
-      } catch (err) {
-        console.error(err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchBestsellers();
-  }, []);
+  try {
+    const response = await getBestSellers();
+    bestsellers = response.data;
+  } catch (err) {
+    console.error(err);
+    error = true;
+  } finally {
+    loading = false;
+  }
 
   return (
     <section className="p-15 bg-gray-50" id="bestsellers">
@@ -43,11 +36,13 @@ export default function BestsellerSection() {
         ) : error ? (
           <div>Error loading bestsellers.</div>
         ) : (
-          bestsellers
-            .slice(0, 6) // Only for now, todo: add bestsellers to the backend
-            .map((product) => (
-              <BestSellerProductCard key={product.id} {...product} />
-            ))
+          <CartProvider>
+            {bestsellers
+              .slice(0, 6) // Only for now, todo: add bestsellers to the backend
+              .map((product) => (
+                <BestSellerProductCard key={product.id} {...product} />
+              ))}
+          </CartProvider>
         )}
       </div>
     </section>
