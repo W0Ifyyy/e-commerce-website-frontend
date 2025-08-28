@@ -1,0 +1,2 @@
+in /products/[id] -> button add to cart(connect it to cartcontext)
+create /products -> add page.tsx listing all products

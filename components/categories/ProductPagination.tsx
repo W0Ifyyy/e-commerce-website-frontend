@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/utils/CartContext";
 import { ProductPaginationProps } from "@/utils/interfaces";
+import Link from "next/link";
 
 export function ProductPagination({ products }: ProductPaginationProps) {
   const itemsPerPage = 10;
@@ -84,19 +85,23 @@ function CategoryProductCard({
   return (
     <div className="flex bg-white shadow-lg rounded-lg py-4 px-8">
       {/* Left: Product Image */}
-      <div className="w-1/3 relative">
-        <img
-          src={imageUrl}
-          alt={name}
-          className="w-full h-auto max-h-40 object-cover rounded-lg"
-        />
-      </div>
+      <Link href={`/products/${id}`}>
+        <div className="w-1/3 relative">
+          <img
+            src={imageUrl}
+            alt={name}
+            className="w-full h-auto max-h-40 object-cover rounded-lg"
+          />
+        </div>
+      </Link>
       {/* Right: Details */}
       <div className="w-2/3 flex flex-col justify-between pl-4">
-        <div>
-          <h3 className="text-xl font-semibold">{name}</h3>
-          <p className="text-lg">${price.toFixed(2)}</p>
-        </div>
+        <Link href={`/products/${id}`}>
+          <div>
+            <h3 className="text-xl font-semibold">{name}</h3>
+            <p className="text-lg">${price.toFixed(2)}</p>
+          </div>
+        </Link>
         <hr className="text-gray-300" />
         <div className="flex justify-end">
           <button
