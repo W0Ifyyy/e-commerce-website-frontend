@@ -2,17 +2,25 @@
 import { useCart } from "@/utils/CartContext";
 import Link from "next/link";
 
+interface BestSellerProductCardProps {
+  id: string | number;
+  name: string;
+  desc: string;
+  price: number;
+  imageUrl: string;
+}
+
 export default function BestSellerProductCard({
   id,
   name,
   desc,
   price,
   imageUrl,
-}: any) {
+}: BestSellerProductCardProps) {
   const { addToCart } = useCart();
 
   function handleAddToCart() {
-    addToCart(id);
+    addToCart(Number(id));
   }
 
   return (

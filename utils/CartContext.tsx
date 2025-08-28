@@ -8,6 +8,14 @@ export interface CartItem {
   count: number;
 }
 
+// Product interface for price calculations
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  imageUrl?: string;
+}
+
 // Updated context type to match cartUtils interface
 interface CartContextType {
   cart: CartItem[];
@@ -17,6 +25,10 @@ interface CartContextType {
   removeFromCart: (productId: number) => void;
   updateCartItem: (productId: number, count: number) => void;
   clearCart: () => void;
+  // New additions
+  totalItems: number;
+  calculateTotalPrice: (products: Product[]) => number;
+  formatPrice: (price: number) => string;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -108,6 +120,25 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  // NEW: Calculate total items in cart
+  const totalItems = cart.reduce((sum, item) => sum + item.count, 0);
+
+  // NEW: Calculate total price based on products data
+  const calculateTotalPrice = (products: Product[]): number => {
+    return cart.reduce((total, cartItem) => {
+      const product = products.find((p) => p.id === cartItem.id);
+      if (product) {
+        return total + product.price * cartItem.count;
+      }
+      return total;
+    }, 0);
+  };
+
+  // NEW: Format price consistently
+  const formatPrice = (price: number): string => {
+    return `$${price.toFixed(2)}`;
+  };
+
   // Initialize cart from cookies on component mount
   useEffect(() => {
     updateCartFromCookies();
@@ -138,6 +169,10 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         removeFromCart,
         updateCartItem,
         clearCart,
+        // New additions
+        totalItems,
+        calculateTotalPrice,
+        formatPrice,
       }}
     >
       {children}
@@ -218,4 +253,23 @@ export const clearCart = () => {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("cartUpdated"));
   }
+};
+
+export const getTotalItems = (): number => {
+  return getCart().reduce((sum, item) => sum + item.count, 0);
+};
+
+export const calculateTotalPrice = (products: Product[]): number => {
+  const cart = getCart();
+  return cart.reduce((total, cartItem) => {
+    const product = products.find((p) => p.id === cartItem.id);
+    if (product) {
+      return total + product.price * cartItem.count;
+    }
+    return total;
+  }, 0);
+};
+
+export const formatPrice = (price: number): string => {
+  return `$${price.toFixed(2)}`;
 };

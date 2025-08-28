@@ -61,7 +61,6 @@ export function ProductPagination({ products }: ProductPaginationProps) {
   );
 }
 
-// For backward compatibility (if imported as default)
 export default ProductPagination;
 
 function CategoryProductCard({

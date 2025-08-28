@@ -2,7 +2,6 @@ import SettingsSection from "@/components/settingsComponents/SettingsSection";
 import getUser, { getUserData } from "@/lib/api/user";
 import { displaySinceInfo } from "@/utils/displaySinceInfo";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
