@@ -2,14 +2,11 @@
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLoggedState } from "@/utils/LoggedStateContext";
 export default function LogInForm() {
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
-
-  const { setLoggedState } = useLoggedState();
 
   const router = useRouter();
 
@@ -19,13 +16,6 @@ export default function LogInForm() {
         withCredentials: true,
       });
 
-      const profileRes = await axios.get("http://localhost:5000/auth/profile", {
-        withCredentials: true,
-      });
-
-      const profile = profileRes.data;
-
-      setLoggedState(true, profile.username, profile.userId);
       router.push("/");
       router.refresh();
     } catch (error: any) {

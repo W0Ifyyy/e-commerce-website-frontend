@@ -39,7 +39,9 @@ export function CartPageContent() {
       }
 
       try {
-        const response = await api.post("/products/all", cartIds);
+        const response = await api.post("http://localhost:5000/products/all", {
+          ids: cartIds,
+        });
         setProducts(response.data);
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -51,12 +53,16 @@ export function CartPageContent() {
     fetchProducts();
   }, [cart]);
 
+  console.log(products);
+
   // Get quantity of a specific item
   const getItemQuantity = (productId: number) => {
     const item = cart.find((item) => item.id === productId);
     return item ? item.count : 0;
   };
 
+  // Add this before calling calculateTotalPrice
+  console.log(products);
   // Calculate total price
   const totalPrice = products ? calculateTotalPrice(products) : 0;
 
@@ -177,11 +183,31 @@ export function CartPageContent() {
                 </div>
 
                 <div className="mt-6 space-y-3">
-                  <Link href="/checkout" className="block">
-                    <button className="w-full px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">
-                      Proceed to Checkout
-                    </button>
-                  </Link>
+                  <button
+                    onClick={async () => {
+                      try {
+                        const cartItems = products?.map((product) => ({
+                          name: product.name,
+                          price: product.price,
+                          quantity: getItemQuantity(product.id),
+                        }));
+
+                        const response = await api.post(
+                          "http://localhost:5000/checkout/finalize",
+                          cartItems
+                        );
+                        const data = await response.data;
+                        if (data.url) {
+                          window.location.href = data.url;
+                        }
+                      } catch (error) {
+                        console.error("Checkout error:", error);
+                      }
+                    }}
+                    className="w-full px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                  >
+                    Proceed to Payment
+                  </button>
 
                   <Link href="/products" className="block">
                     <button className="w-full px-4 py-2 border border-gray-400 text-gray-600 rounded hover:bg-gray-200">
