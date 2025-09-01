@@ -164,6 +164,12 @@ export default function SignUpForm() {
       >
         Sign Up
       </button>
+      <p className="mt-4 text-center text-gray-600">
+        Already have an account?{" "}
+        <a href="/sign-in" className="text-orange-500 hover:underline">
+          Sign In
+        </a>
+      </p>
       {(error.username || error.email || error.password) && (
         <div className="text-red-400 flex flex-col mt-4 gap-3">
           {error.username && (

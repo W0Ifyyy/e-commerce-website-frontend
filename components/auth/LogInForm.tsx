@@ -69,6 +69,12 @@ export default function LogInForm() {
       >
         Sign In
       </button>
+      <p className="mt-4 text-center text-gray-600">
+        Don't have an account?{" "}
+        <a href="/sign-up" className="text-orange-500 hover:underline">
+          Sign Up
+        </a>
+      </p>
     </form>
   );
 }

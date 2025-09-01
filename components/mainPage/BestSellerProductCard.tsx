@@ -1,5 +1,6 @@
 "use client";
 import { useCart } from "@/utils/CartContext";
+import Image from "next/image";
 import Link from "next/link";
 
 interface BestSellerProductCardProps {
@@ -27,10 +28,12 @@ export default function BestSellerProductCard({
     <div className="bg-white shadow-lg rounded-lg p-4 flex flex-col justify-center md:block">
       <Link href={`/products/${id}`}>
         <div>
-          <img
+          <Image
             src={imageUrl}
             alt={name}
-            className="w-full h-48 object-cover rounded-lg"
+            width={500}
+            height={300}
+            className="w-full h-48 object-cover rounded-lg shadow"
           />
           <h3 className="text-lg font-semibold mt-2">{name}</h3>
           <p className="text-gray-500">{desc}</p>

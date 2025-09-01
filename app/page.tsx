@@ -4,7 +4,7 @@ import Hero from "@/components/mainPage/Hero";
 
 export default function Home() {
   return (
-    <main>
+    <main className="min-h-screen">
       <Hero />
       <BestsellerSection />
       <CategoriesSection />

@@ -82,29 +82,29 @@ function CategoryProductCard({
   }
 
   return (
-    <div className="flex bg-white shadow-lg rounded-lg py-4 px-8">
-      {/* Left: Product Image */}
-      <Link href={`/products/${id}`}>
-        <div className="w-1/3 relative">
+    <div className="flex bg-white shadow-lg rounded-lg overflow-hidden h-32">
+      {/* Left: Product Image (1/3 of card width) */}
+      <Link href={`/products/${id}`} className="w-1/3 h-full flex-shrink-0">
+        <div className="h-full w-full relative">
           <img
             src={imageUrl}
             alt={name}
-            className="w-full h-auto max-h-40 object-cover rounded-lg"
+            className="w-full h-full object-cover"
           />
         </div>
       </Link>
-      {/* Right: Details */}
-      <div className="w-2/3 flex flex-col justify-between pl-4">
-        <Link href={`/products/${id}`}>
+
+      {/* Right: Details (2/3 of card width) */}
+      <div className="w-2/3 flex flex-col justify-between p-4">
+        <Link href={`/products/${id}`} className="flex-grow">
           <div>
             <h3 className="text-xl font-semibold">{name}</h3>
-            <p className="text-lg">${price.toFixed(2)}</p>
+            <p className="text-red-600 font-medium">${price.toFixed(2)}</p>
           </div>
         </Link>
-        <hr className="text-gray-300" />
         <div className="flex justify-end">
           <button
-            className="mt-2 border border-orange-400 text-black py-2 px-4 rounded hover:bg-orange-500 hover:text-white transition-colors"
+            className="border border-orange-400 text-black py-2 px-4 rounded hover:bg-orange-500 hover:text-white transition-colors"
             onClick={handleAddToCart}
           >
             Add to Cart
