@@ -1,0 +1,4 @@
+i need to better organise cart, so i pass the userId and if userIsAuthenticated to the cartPage before 
+rendering, and then check if we are logged in so i can proceed to payment and create pending order with that usersId,
+ and then on backend i need to listen for stripes events and when specific event is done i check the metadata for order and change 
+ its status to succesful
