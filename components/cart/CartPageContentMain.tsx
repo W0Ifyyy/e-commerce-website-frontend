@@ -230,9 +230,12 @@ export function CartPageContent({
         status: "PENDING",
       };
 
-      await api.post("http://localhost:5000/orders", orderData);
+      const orderResponse = await api.post(
+        "http://localhost:5000/orders",
+        orderData
+      );
 
-      //const orderId = orderResponse.data.id;
+      const orderId = orderResponse.data.order.id;
 
       const cartItems = products?.map((product) => ({
         name: product.name,
@@ -242,11 +245,10 @@ export function CartPageContent({
 
       const checkoutResponse = await api.post(
         "http://localhost:5000/checkout/finalize",
-        cartItems
-        //{
-        //   orderId,
-        //   items: cartItems,
-        // }
+        {
+          orderId,
+          products: cartItems,
+        }
       );
 
       if (checkoutResponse.data.url) {
