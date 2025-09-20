@@ -1,4 +1,4 @@
-import SettingsSection from "@/components/settingsComponents/SettingsSection";
+import OrderSection from "@/components/profilePage/OrdersSection";
 import getUser, { getUserData } from "@/lib/api/user";
 import { displaySinceInfo } from "@/utils/displaySinceInfo";
 import { cookies } from "next/headers";
@@ -12,6 +12,7 @@ export default async function ProfilePage() {
     redirect("/sign-in");
   const userData = await getUserData(user.userId, accessToken.value);
   const userSince = new Date(userData.createdAt);
+  console.log(userData.orders[1].items);
   return (
     <main className="grid grid-cols-2 gap-5 bg-gray-100 min-h-[80vh] max-w-[80vw] p-4 mx-auto">
       {/* First row - two columns */}
@@ -26,8 +27,20 @@ export default async function ProfilePage() {
           You're with us for: {displaySinceInfo(userSince)}
         </p>
       </div>
+      {/* Second row - single column */}
+      <div className="col-span-2 bg-gray-50 p-6 md:p-10 rounded">
+        <div className="flex flex-col">
+          <h2 className="text-2xl font-bold mb-6">Your orders</h2>
 
-      <SettingsSection />
+          {userData.orders && userData.orders.length > 0 ? (
+            <OrderSection orders={userData.orders} />
+          ) : (
+            <div className="text-center py-10 bg-white rounded-lg border border-gray-200">
+              <p className="text-gray-500">You have no orders yet.</p>
+            </div>
+          )}
+        </div>
+      </div>
     </main>
   );
 }
