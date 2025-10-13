@@ -1,9 +1,3 @@
-- create order functionality
-
-  - implement order creation after successful payment
-  - build order history retrieval API
-  - display orders on profile page
-
 - settings implementation
 
   - profile settings (username, email, password)
