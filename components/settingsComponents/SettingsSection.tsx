@@ -52,7 +52,7 @@ export default function SettingsSection() {
               </p>
             </div>
             <Link
-              href="/orders"
+              href="/settings/orders"
               className="text-orange-500 font-medium hover:text-orange-600"
             >
               VIEW
