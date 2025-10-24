@@ -23,14 +23,15 @@ export default function SecurityPageSection({
   });
 
   const updatePassword = async (data: {
-    currentPassword: string;
+    oldPassword: string;
     newPassword: string;
   }) => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/user/${userInfo.id}`,
+        `http://localhost:5000/user/changePassword/${userInfo.id}`,
         {
-          password: data.newPassword,
+          oldPassword: data.oldPassword,
+          newPassword: data.newPassword,
         },
         {
           headers: {
@@ -92,7 +93,7 @@ export default function SecurityPageSection({
     }
 
     updatePassword({
-      currentPassword: formData.currentPassword,
+      oldPassword: formData.currentPassword,
       newPassword: formData.newPassword,
     });
     setIsChangingPassword(false);
