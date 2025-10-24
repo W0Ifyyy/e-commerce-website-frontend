@@ -7,13 +7,20 @@ import { redirect } from "next/navigation";
 export default async function OrdersPage() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token");
+
   const user = await getUser();
+
+  // not logged in → redirect to login page
   if (user.username === null || user.isLoggedIn === false || !accessToken)
     redirect("/sign-in");
+
+  // fetch full user data (includes orders)
   const userData = await getUserData(user.userId, accessToken.value);
+
   return (
     <div className="flex flex-col max-w-4xl mx-auto w-full px-4 py-10">
       <h2 className="text-2xl font-bold mb-6">Order History</h2>
+
       <div className="w-full max-w-md mb-4 px-1 mt-10">
         <Link
           href="/settings"
@@ -34,6 +41,7 @@ export default async function OrdersPage() {
           <span className="text-sm font-medium">Back to Settings</span>
         </Link>
       </div>
+
       {userData.orders && userData.orders.length > 0 ? (
         <OrdersSection orders={userData.orders} />
       ) : (

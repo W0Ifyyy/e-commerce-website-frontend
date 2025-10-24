@@ -5,14 +5,15 @@ import { useCart } from "@/utils/CartContext";
 import { ProductPaginationProps } from "@/utils/interfaces";
 import Link from "next/link";
 
+// Simple client-side pagination for category products
 export function ProductPagination({ products }: ProductPaginationProps) {
-  const itemsPerPage = 10;
+  const itemsPerPage = 10; // show 10 items per page
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  // Calculate total pages based on the length of products array
+  // how many pages we need
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
-  // Determine the products to display for the current page
+  // slice the list for the current page
   const currentProducts = products.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -20,6 +21,7 @@ export function ProductPagination({ products }: ProductPaginationProps) {
 
   return (
     <div className="flex flex-col w-full">
+      {/* product list for current page */}
       <div className="flex flex-col gap-4">
         {currentProducts.map((product) => (
           <CategoryProductCard
@@ -33,7 +35,7 @@ export function ProductPagination({ products }: ProductPaginationProps) {
         ))}
       </div>
 
-      {/* Pagination Controls */}
+      {/* pager controls */}
       {totalPages > 1 && (
         <div className="flex justify-center space-x-4 mt-8">
           <button
@@ -63,6 +65,7 @@ export function ProductPagination({ products }: ProductPaginationProps) {
 
 export default ProductPagination;
 
+// Presentational card; uses CartContext to add item
 function CategoryProductCard({
   id,
   name,
@@ -71,19 +74,20 @@ function CategoryProductCard({
 }: {
   id: number;
   name: string;
-  description: string;
+  description: string; // available but not displayed here
   price: number;
   imageUrl: string;
 }) {
   const { addToCart } = useCart();
 
+  // add current product to cart
   function handleAddToCart() {
     addToCart(id);
   }
 
   return (
     <div className="flex bg-white shadow-lg rounded-lg overflow-hidden h-32">
-      {/* Left: Product Image (1/3 of card width) */}
+      {/* image links to product details */}
       <Link href={`/products/${id}`} className="w-1/3 h-full flex-shrink-0">
         <div className="h-full w-full relative">
           <img
@@ -94,7 +98,7 @@ function CategoryProductCard({
         </div>
       </Link>
 
-      {/* Right: Details (2/3 of card width) */}
+      {/* basic info + add-to-cart */}
       <div className="w-2/3 flex flex-col justify-between p-4">
         <Link href={`/products/${id}`} className="flex-grow">
           <div>

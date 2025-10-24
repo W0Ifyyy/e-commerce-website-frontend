@@ -23,9 +23,8 @@ export default async function ProductPage({
   let error: string | null = null;
 
   try {
-    // Replace axios with native fetch
+    // Replace axios with native fetch because it didnt work somehow with axios
     const response = await fetch(`http://localhost:5000/products/${id}`, {
-      // This ensures fresh data
       cache: "no-store",
     });
 

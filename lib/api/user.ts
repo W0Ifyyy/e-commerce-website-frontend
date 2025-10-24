@@ -1,5 +1,5 @@
-import axios from "axios";
 import { cookies } from "next/headers";
+import api from "../axios";
 
 export default async function getUser() {
   const cookieStore = await cookies();
@@ -10,7 +10,7 @@ export default async function getUser() {
   }
 
   try {
-    const res = await axios.get("http://localhost:5000/auth/profile", {
+    const res = await api.get("/auth/profile", {
       headers: {
         Cookie: `access_token=${accessToken.value}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
       },
@@ -32,7 +32,7 @@ export default async function getUser() {
 
 export async function getUserData(id: string, accessToken: string) {
   try {
-    const res = await axios.get(`http://localhost:5000/user/${id}`, {
+    const res = await api.get(`/user/${id}`, {
       headers: {
         Cookie: `access_token=${accessToken}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
       },

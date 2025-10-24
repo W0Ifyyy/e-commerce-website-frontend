@@ -1,14 +1,13 @@
 "use client";
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
-// Use the same interface as cartUtils
 export interface CartItem {
   id: number;
   count: number;
 }
 
-// Product interface for price calculations
 export interface Product {
   id: number;
   name: string;
@@ -16,7 +15,7 @@ export interface Product {
   imageUrl?: string;
 }
 
-// Updated context type to match cartUtils interface
+// public API exposed by the context
 interface CartContextType {
   cart: CartItem[];
   loading: boolean;
@@ -25,7 +24,6 @@ interface CartContextType {
   removeFromCart: (productId: number) => void;
   updateCartItem: (productId: number, count: number) => void;
   clearCart: () => void;
-  // New additions
   totalItems: number;
   calculateTotalPrice: (products: Product[]) => number;
   formatPrice: (price: number) => string;
@@ -33,12 +31,12 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// Cookie name constant
+// single cookie key for the cart
 const CART_COOKIE_NAME = "cart_data";
 
-// Cookie options
+// cookie config (client cookie)
 const COOKIE_OPTIONS = {
-  expires: 7, // 7 days
+  expires: 7,
   path: "/",
   sameSite: "strict" as const,
 };
@@ -47,12 +45,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Get cart items - matches cartUtils.getCart()
   const getCart = (): CartItem[] => {
     return cart;
   };
 
-  // Update cart from cookies
+  // read cart from cookie and load into state
   const updateCartFromCookies = () => {
     try {
       const cookieCart = Cookies.get(CART_COOKIE_NAME);
@@ -65,18 +62,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  // Helper function to save cart to cookies
+  // write cart to cookie, update state, and broadcast change
   const saveCart = (cartItems: CartItem[]) => {
     Cookies.set(CART_COOKIE_NAME, JSON.stringify(cartItems), COOKIE_OPTIONS);
     setCart(cartItems);
 
-    // Dispatch event for any components listening for cart updates
+    // let other tabs/components know cart changed
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("cartUpdated"));
     }
   };
 
-  // Add item to cart - matches cartUtils.addToCart()
+  // add or bump item quantity
   const addToCart = (productId: number, count: number = 1) => {
     const updatedCart = [...cart];
     const existingItem = updatedCart.find((item) => item.id === productId);
@@ -90,13 +87,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     saveCart(updatedCart);
   };
 
-  // Remove item from cart - matches cartUtils.removeFromCart()
+  // remove item completely
   const removeFromCart = (productId: number) => {
     const updatedCart = cart.filter((item) => item.id !== productId);
     saveCart(updatedCart);
   };
 
-  // Update item count - matches cartUtils.updateCartItem()
+  // set exact quantity
   const updateCartItem = (productId: number, count: number) => {
     if (count <= 0) {
       removeFromCart(productId);
@@ -109,21 +106,20 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     saveCart(updatedCart);
   };
 
-  // Clear cart - matches cartUtils.clearCart()
+  // clear all cart data
   const clearCart = () => {
     Cookies.remove(CART_COOKIE_NAME, { path: "/" });
     setCart([]);
 
-    // Dispatch event for any components listening for cart updates
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("cartUpdated"));
     }
   };
 
-  // NEW: Calculate total items in cart
+  // derived: total items count
   const totalItems = cart.reduce((sum, item) => sum + item.count, 0);
 
-  // NEW: Calculate total price based on products data
+  // derived: sum(price * qty) using given products
   const calculateTotalPrice = (products: Product[]): number => {
     return cart.reduce((total, cartItem) => {
       const product = products.find((p) => p.id === cartItem.id);
@@ -134,16 +130,15 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     }, 0);
   };
 
-  // NEW: Format price consistently
+  // display helper
   const formatPrice = (price: number): string => {
     return `$${price.toFixed(2)}`;
   };
 
-  // Initialize cart from cookies on component mount
+  // load cart from cookie on mount and sync on "cartUpdated"
   useEffect(() => {
     updateCartFromCookies();
 
-    // Listen for cart updates from other components
     const handleCartUpdated = () => {
       updateCartFromCookies();
     };
@@ -169,7 +164,6 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         removeFromCart,
         updateCartItem,
         clearCart,
-        // New additions
         totalItems,
         calculateTotalPrice,
         formatPrice,
@@ -180,6 +174,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// hook to access cart (must be inside provider)
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
@@ -188,7 +183,7 @@ export const useCart = () => {
   return context;
 };
 
-// For direct usage without hooks (compatible with cartUtils)
+// read cart directly from cookie
 export const getCart = (): CartItem[] => {
   if (typeof window === "undefined") return [];
 
@@ -201,6 +196,7 @@ export const getCart = (): CartItem[] => {
   }
 };
 
+// add item without context
 export const addToCart = (productId: number, count: number = 1) => {
   const cart = getCart();
   const existingItem = cart.find((item) => item.id === productId);
@@ -218,6 +214,7 @@ export const addToCart = (productId: number, count: number = 1) => {
   }
 };
 
+// remove item without context
 export const removeFromCart = (productId: number) => {
   const cart = getCart().filter((item) => item.id !== productId);
 
@@ -228,6 +225,7 @@ export const removeFromCart = (productId: number) => {
   }
 };
 
+// set quantity without context
 export const updateCartItem = (productId: number, count: number) => {
   if (count <= 0) {
     removeFromCart(productId);
@@ -247,6 +245,7 @@ export const updateCartItem = (productId: number, count: number) => {
   }
 };
 
+// clear cookie without context
 export const clearCart = () => {
   Cookies.remove(CART_COOKIE_NAME, { path: "/" });
 
@@ -255,10 +254,12 @@ export const clearCart = () => {
   }
 };
 
+// total items using cookie
 export const getTotalItems = (): number => {
   return getCart().reduce((sum, item) => sum + item.count, 0);
 };
 
+// total price using cookie + products list
 export const calculateTotalPrice = (products: Product[]): number => {
   const cart = getCart();
   return cart.reduce((total, cartItem) => {
@@ -270,6 +271,7 @@ export const calculateTotalPrice = (products: Product[]): number => {
   }, 0);
 };
 
+// price formatting helper
 export const formatPrice = (price: number): string => {
   return `$${price.toFixed(2)}`;
 };

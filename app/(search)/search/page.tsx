@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductsSection from "@/components/categories/ProductSection";
@@ -10,10 +11,15 @@ export default function SearchPage() {
   const [productData, setProductData] = useState<null | IProduct[]>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // API base URL (from env) with local fallback
+  const baseUrl = process.env.NEST_PUBLIC_API_URL || "http://localhost:5000";
+
+  // keep state in sync with the URL param
   useEffect(() => {
     setSearchTerm(searchParams.get("name") || "");
   }, [searchParams]);
 
+  // fetch when term changes; skip if empty
   useEffect(() => {
     if (searchTerm) {
       fetchSearchResults();
@@ -22,13 +28,12 @@ export default function SearchPage() {
     }
   }, [searchTerm]);
 
+  // hit backend search endpoint and store results
   async function fetchSearchResults() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:5000/products/search?name=${encodeURIComponent(
-          searchTerm
-        )}`
+        `${baseUrl}/products/search?name=${encodeURIComponent(searchTerm)}`
       );
       const data = await response.json();
       setProductData(data);
@@ -42,6 +47,7 @@ export default function SearchPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[90vh] bg-gray-50">
       <h1 className="text-3xl font-bold mb-6">Search Results</h1>
+
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md">
         {!isLoading && searchTerm ? (
           <div>

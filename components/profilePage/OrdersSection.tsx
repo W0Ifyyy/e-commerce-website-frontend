@@ -32,8 +32,9 @@ interface OrderSectionProps {
 }
 
 export default function OrdersSection({ orders }: OrderSectionProps) {
-  const [showAllOrders, setShowAllOrders] = useState(false);
+  const [showAllOrders, setShowAllOrders] = useState(false); // toggle to show all vs latest
 
+  // empty state
   if (!orders || orders.length === 0) {
     return (
       <div className="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
@@ -42,10 +43,12 @@ export default function OrdersSection({ orders }: OrderSectionProps) {
     );
   }
 
+  // newest first
   const sortedOrders = [...orders].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
+  // either all orders or just the most recent one
   const displayedOrders = showAllOrders ? sortedOrders : [sortedOrders[0]];
 
   return (
@@ -55,6 +58,7 @@ export default function OrdersSection({ orders }: OrderSectionProps) {
           key={order.id}
           className="border border-gray-200 rounded-lg p-3 sm:p-5 bg-white shadow-sm hover:shadow-md transition-shadow duration-200"
         >
+          {/* header: order id + status pill */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
             <h3 className="font-semibold text-base sm:text-lg mb-2 sm:mb-0">
               Order #{order.id}
@@ -70,6 +74,7 @@ export default function OrdersSection({ orders }: OrderSectionProps) {
             </span>
           </div>
 
+          {/*  row: total, items count, date */}
           <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm text-gray-600 mb-2 space-y-1 sm:space-y-0">
             <span className="font-medium">
               Order Total: ${order.totalAmount.toFixed(2)} Items:{" "}
@@ -80,6 +85,7 @@ export default function OrdersSection({ orders }: OrderSectionProps) {
             </span>
           </div>
 
+          {/* items list */}
           <div className="mt-4 border-t border-gray-200 pt-4">
             <h4 className="font-medium text-sm mb-2">Order Items:</h4>
             <div className="space-y-3">
@@ -88,6 +94,7 @@ export default function OrdersSection({ orders }: OrderSectionProps) {
                   key={item.id}
                   className="flex flex-col sm:flex-row items-start sm:items-center p-2 sm:p-3 rounded bg-gray-50 justify-between"
                 >
+                  {/* product thumbnail + name/desc */}
                   <div className="flex items-center w-full sm:w-auto mb-2 sm:mb-0">
                     <Image
                       src={item.product.imageUrl}
@@ -105,6 +112,8 @@ export default function OrdersSection({ orders }: OrderSectionProps) {
                       </p>
                     </div>
                   </div>
+
+                  {/* price and quantity */}
                   <div className="text-right ml-auto sm:ml-0 mt-1 sm:mt-0">
                     <p className="font-medium">${item.unitPrice}</p>
                     <p className="text-xs text-gray-500">x {item.quantity}</p>
@@ -115,6 +124,8 @@ export default function OrdersSection({ orders }: OrderSectionProps) {
           </div>
         </div>
       ))}
+
+      {/* toggle to expand/collapse older orders */}
       {sortedOrders.length > 1 && (
         <button
           onClick={() => setShowAllOrders(!showAllOrders)}

@@ -1,6 +1,7 @@
 "use client";
+
 import { useCart } from "@/utils/CartContext";
-import axios from "axios";
+import api from "@/lib/axios";
 import Link from "next/link";
 import React from "react";
 
@@ -13,9 +14,11 @@ export function NavLinks({
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const { cart } = useCart();
+
+  // logout then hard refresh to clear client state
   const handleLogout = async () => {
     try {
-      await axios.post(
+      await api.post(
         "http://localhost:5000/auth/logout",
         {},
         {
@@ -27,8 +30,10 @@ export function NavLinks({
       console.error("Error logging out:", error);
     }
   };
+
   return (
     <ul className="flex gap-8 items-center">
+      {/* cart link with icon and item count */}
       <li>
         <Link href="/cart" className="hover:cursor-pointer flex items-center">
           <button className="hover:cursor-pointer py-1 px-1 transition-colors border border-transparent">
@@ -53,6 +58,7 @@ export function NavLinks({
 
       {!isLoggedIn ? (
         <>
+          {/* sign-in / sign-up when logged out */}
           <li>
             <Link href={"/sign-in"} className="hover:cursor-pointer">
               <button className="border rounded border-orange-200 text-gray-700 hover:bg-gray-100 hover:cursor-pointer px-2 py-1 sm:px-4 transition-colors">
@@ -69,6 +75,7 @@ export function NavLinks({
           </li>
         </>
       ) : (
+        // avatar button toggles dropdown with actions
         <li className="relative">
           <div
             onClick={() => setIsOpen(!isOpen)}

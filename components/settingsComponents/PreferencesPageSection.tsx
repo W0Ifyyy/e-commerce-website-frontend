@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "@/lib/axios";
+import api from "@/lib/axios";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -15,26 +15,32 @@ export default function PreferencesPageSection({
     accessToken: string;
   };
 }) {
+  // edit mode toggle
   const [isEditing, setIsEditing] = useState(false);
+  // transient UI messages
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  // last saved snapshot (used for cancel)
   const [originalData, setOriginalData] = useState(userPreferences);
+  // live form values
   const [formData, setFormData] = useState({ ...originalData });
 
+  // save preferences to API
   const updateDatabase = async (data: {
     currency: string;
     country: string;
     emailNotifications: boolean;
   }) => {
     try {
-      const res = await axios.put(
-        `http://localhost:5000/user/${userPreferences.id}`,
+      const res = await api.put(
+        `/user/${userPreferences.id}`,
         {
           preferredCurrency: data.currency,
           country: data.country,
           emailNotifications: data.emailNotifications,
         },
         {
+          // send auth cookie with request
           headers: {
             Cookie: `access_token=${userPreferences.accessToken}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
           },
@@ -49,12 +55,12 @@ export default function PreferencesPageSection({
     }
   };
 
+  // minimal validation
   const validateForm = () => {
     if (!formData.country.trim()) {
       setErrorMessage("Country cannot be empty");
       return false;
     }
-
     if (!formData.currency.trim()) {
       setErrorMessage("Currency cannot be empty");
       return false;
@@ -63,6 +69,7 @@ export default function PreferencesPageSection({
     return true;
   };
 
+  // handle text/select/checkbox changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -76,6 +83,7 @@ export default function PreferencesPageSection({
     }
   };
 
+  // validate → store → update state → notify
   const handleSave = () => {
     setErrorMessage("");
     setSuccessMessage("");
@@ -100,7 +108,7 @@ export default function PreferencesPageSection({
 
   return (
     <div className="flex flex-col items-center w-full py-8 min-h-[80vh]">
-      {/* Back arrow navigation */}
+      {/* back to settings */}
       <div className="w-full max-w-md mb-4 px-1 mt-10">
         <Link
           href="/settings"
@@ -123,18 +131,19 @@ export default function PreferencesPageSection({
       </div>
 
       <div className="p-6 bg-white rounded-lg shadow-sm flex flex-col max-w-md w-full">
+        {/* status messages */}
         {successMessage && (
           <div className="bg-green-100 text-green-700 p-3 rounded mb-4 text-sm">
             {successMessage}
           </div>
         )}
-
         {errorMessage && (
           <div className="bg-red-100 text-red-700 p-3 rounded mb-4 text-sm">
             {errorMessage}
           </div>
         )}
 
+        {/* header + actions */}
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-lg font-semibold">Preferences</h2>
@@ -167,7 +176,9 @@ export default function PreferencesPageSection({
           )}
         </div>
 
+        {/* form fields */}
         <div className="space-y-4">
+          {/* country select */}
           <div className="flex flex-col">
             <label className="text-xs font-medium text-gray-700 mb-1">
               Country
@@ -191,6 +202,7 @@ export default function PreferencesPageSection({
             </select>
           </div>
 
+          {/* currency select */}
           <div className="flex flex-col">
             <label className="text-xs font-medium text-gray-700 mb-1">
               Currency
@@ -213,6 +225,7 @@ export default function PreferencesPageSection({
             </select>
           </div>
 
+          {/* notifications toggle */}
           <div className="mt-6">
             <h3 className="text-sm font-medium text-gray-700 mb-3">
               Notification Preferences
@@ -222,6 +235,8 @@ export default function PreferencesPageSection({
               <label className="text-xs text-gray-600">
                 Receive email notifications
               </label>
+
+              {/* custom switch */}
               <div className="relative inline-block w-10 mr-2 align-middle select-none">
                 <input
                   type="checkbox"

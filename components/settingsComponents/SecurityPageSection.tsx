@@ -1,9 +1,8 @@
 "use client";
-import axios from "@/lib/axios";
+import api from "@/lib/axios";
 import Link from "next/link";
 import { useState } from "react";
 
-//todo, adjust the backend to the frontend way of changing password (current password verification)
 export default function SecurityPageSection({
   userInfo,
 }: {
@@ -13,6 +12,7 @@ export default function SecurityPageSection({
   };
 }) {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -22,25 +22,29 @@ export default function SecurityPageSection({
     confirmPassword: "",
   });
 
+  // call backend to update password
   const updatePassword = async (data: {
     oldPassword: string;
     newPassword: string;
   }) => {
     try {
-      const res = await axios.put(
-        `http://localhost:5000/user/changePassword/${userInfo.id}`,
+      const res = await api.put(
+        `/user/changePassword/${userInfo.id}`,
         {
           oldPassword: data.oldPassword,
           newPassword: data.newPassword,
         },
         {
+          // include access token via cookie header
           headers: {
             Cookie: `access_token=${userInfo.accessToken}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
           },
         }
       );
+
       if (res.status === 200) {
         setSuccessMessage("Password changed successfully!");
+        // reset form after successful change
         setFormData({
           currentPassword: "",
           newPassword: "",
@@ -55,49 +59,71 @@ export default function SecurityPageSection({
     }
   };
 
+  // basic front-end validation before request
   const validateForm = () => {
+    const pwd = formData.newPassword;
+
     if (!formData.currentPassword) {
       setErrorMessage("Current password is required");
       return false;
     }
-
-    if (!formData.newPassword) {
+    if (!pwd) {
       setErrorMessage("New password is required");
       return false;
     }
-
-    if (formData.newPassword.length < 8) {
+    if (pwd.length < 8) {
       setErrorMessage("New password must be at least 8 characters long");
       return false;
     }
-
-    if (formData.newPassword !== formData.confirmPassword) {
+    if (!/[A-Z]/.test(pwd)) {
+      setErrorMessage(
+        "New password must contain at least one uppercase letter"
+      );
+      return false;
+    }
+    if (!/[a-z]/.test(pwd)) {
+      setErrorMessage(
+        "New password must contain at least one lowercase letter"
+      );
+      return false;
+    }
+    if (!/\d/.test(pwd)) {
+      setErrorMessage("New password must contain at least one digit");
+      return false;
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) {
+      setErrorMessage(
+        "New password must contain at least one special character"
+      );
+      return false;
+    }
+    if (pwd !== formData.confirmPassword) {
       setErrorMessage("New passwords do not match");
       return false;
     }
-
     return true;
   };
 
+  // keep form state in sync with inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // validate → send request → close editor → show message
   const handleSave = () => {
     setErrorMessage("");
     setSuccessMessage("");
 
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     updatePassword({
       oldPassword: formData.currentPassword,
       newPassword: formData.newPassword,
     });
-    setIsChangingPassword(false);
 
+    setIsChangingPassword(false);
+    // auto-hide success message
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
@@ -113,7 +139,7 @@ export default function SecurityPageSection({
 
   return (
     <div className="flex flex-col items-center w-full py-8 min-h-[80vh]">
-      {/* Back arrow navigation */}
+      {/* back to settings */}
       <div className="w-full max-w-md mb-4 px-1 mt-10">
         <Link
           href="/settings"
@@ -136,6 +162,7 @@ export default function SecurityPageSection({
       </div>
 
       <div className="p-6 bg-white rounded-lg shadow-sm flex flex-col max-w-md w-full">
+        {/* status banners */}
         {successMessage && (
           <div className="bg-green-100 text-green-700 p-3 rounded mb-4 text-sm">
             {successMessage}
@@ -148,6 +175,7 @@ export default function SecurityPageSection({
           </div>
         )}
 
+        {/* header + actions */}
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-lg font-semibold">Security Settings</h2>
@@ -180,9 +208,10 @@ export default function SecurityPageSection({
           )}
         </div>
 
-        {/* Password fields */}
+        {/* toggle between summary and password form */}
         {isChangingPassword ? (
           <div className="space-y-4">
+            {/* current password */}
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-700 mb-1">
                 Current Password
@@ -196,6 +225,7 @@ export default function SecurityPageSection({
               />
             </div>
 
+            {/* new password */}
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-700 mb-1">
                 New Password
@@ -212,6 +242,7 @@ export default function SecurityPageSection({
               </p>
             </div>
 
+            {/* confirm password */}
             <div className="flex flex-col">
               <label className="text-xs font-medium text-gray-700 mb-1">
                 Confirm New Password
@@ -226,6 +257,7 @@ export default function SecurityPageSection({
             </div>
           </div>
         ) : (
+          // simple summary when not editing
           <div className="py-2">
             <div className="flex items-center justify-between py-2 border-b">
               <div>

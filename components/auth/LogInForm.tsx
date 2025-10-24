@@ -1,18 +1,20 @@
 "use client";
-import axios from "axios";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import api from "@/lib/axios";
+import Link from "next/link";
 export default function LogInForm() {
+  //TODO: Add error handling
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
 
   const router = useRouter();
-
   const handleSubmit = async () => {
     try {
-      await axios.post("http://localhost:5000/auth/login", user, {
+      await api.post("/auth/login", user, {
         withCredentials: true,
       });
 
@@ -70,10 +72,10 @@ export default function LogInForm() {
         Sign In
       </button>
       <p className="mt-4 text-center text-gray-600">
-        Don't have an account?{" "}
-        <a href="/sign-up" className="text-orange-500 hover:underline">
+        Don&apos;t have an account?{" "}
+        <Link href="/sign-up" className="text-orange-500 hover:underline">
           Sign Up
-        </a>
+        </Link>
       </p>
     </form>
   );

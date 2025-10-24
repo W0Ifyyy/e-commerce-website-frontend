@@ -18,8 +18,11 @@ export default async function RootLayout({
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token");
 
+  // default navbar state
   let username = null;
   let isLoggedIn = false;
+
+  // try to resolve user from backend using the cookie
   if (accessToken) {
     try {
       const res = await axios.get("http://localhost:5000/auth/profile", {
@@ -27,7 +30,6 @@ export default async function RootLayout({
           Cookie: `access_token=${accessToken.value}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
         },
       });
-      console.log(res.data, res.status);
       if (res.status === 200) {
         username = res.data.username;
         isLoggedIn = true;
