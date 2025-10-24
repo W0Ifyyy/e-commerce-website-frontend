@@ -306,6 +306,7 @@ export function CartPageContent({
       // Create checkout session and redirect user
       const checkoutResponse = await api.post("/checkout/finalize", {
         orderId,
+        userId,
         products: cartItems,
       });
 

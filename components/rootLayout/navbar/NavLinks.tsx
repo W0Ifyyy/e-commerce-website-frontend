@@ -19,7 +19,7 @@ export function NavLinks({
   const handleLogout = async () => {
     try {
       await api.post(
-        "http://localhost:5000/auth/logout",
+        "/auth/logout",
         {},
         {
           withCredentials: true,
