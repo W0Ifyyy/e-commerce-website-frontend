@@ -57,11 +57,11 @@ export default function PreferencesPageSection({
 
   // minimal validation
   const validateForm = () => {
-    if (!formData.country.trim()) {
+    if (!formData.country) {
       setErrorMessage("Country cannot be empty");
       return false;
     }
-    if (!formData.currency.trim()) {
+    if (!formData.currency) {
       setErrorMessage("Currency cannot be empty");
       return false;
     }
@@ -85,6 +85,7 @@ export default function PreferencesPageSection({
 
   // validate → store → update state → notify
   const handleSave = () => {
+    console.log(userPreferences.currency)
     setErrorMessage("");
     setSuccessMessage("");
 

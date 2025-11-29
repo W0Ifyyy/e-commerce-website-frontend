@@ -21,7 +21,7 @@ export default async function PreferencesPage() {
   return (
     <PreferencesPageSection
       userPreferences={{
-        currency: userData.prefferedCurrency,
+        currency: userData.preferredCurrency,
         country: userData.country,
         emailNotifications: userData.emailNotifications,
         id: userData.id,
