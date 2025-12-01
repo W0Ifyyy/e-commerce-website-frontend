@@ -7,7 +7,7 @@ export default function SuccessPageContent() {
 
   useEffect(() => {
     clearCart();
-  }, []);
+  }, [clearCart]);
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-md">

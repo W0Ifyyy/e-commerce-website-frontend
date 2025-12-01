@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import api from "@/lib/axios";
 import Link from "next/link";
 export default function LogInForm() {
-  //TODO: Add error handling
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -20,8 +19,8 @@ export default function LogInForm() {
 
       router.push("/");
       router.refresh();
-    } catch (error: any) {
-      console.error("Login failed:", error?.response?.data || error.message);
+    } catch (error: unknown) {
+      console.error("Login failed:", error instanceof Error ? error.message : "Unknown error");
     }
   };
   return (

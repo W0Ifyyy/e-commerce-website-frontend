@@ -14,7 +14,7 @@ interface Product {
 export default async function ProductPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   // Await params before accessing its properties
   const { id } = await params;
@@ -23,7 +23,6 @@ export default async function ProductPage({
   let error: string | null = null;
 
   try {
-    // Replace axios with native fetch because it didnt work somehow with axios
     const response = await fetch(`http://localhost:5000/products/${id}`, {
       cache: "no-store",
     });

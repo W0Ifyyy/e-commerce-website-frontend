@@ -5,7 +5,7 @@ import api from "@/lib/axios";
 export default async function CategoryProducts({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params; // route param
 

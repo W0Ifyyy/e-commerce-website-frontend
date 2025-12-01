@@ -4,6 +4,7 @@ import api from "@/lib/axios";
 import { CartProvider, useCart } from "@/utils/CartContext";
 import { IProduct } from "@/utils/interfaces";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
@@ -73,7 +74,17 @@ const EmptyCart = () => (
  * - onUpdate: handler to change quantity
  * - onRemove: handler to remove the item
  */
-const CartItem = ({ product, quantity, onUpdate, onRemove }) => {
+const CartItem = ({ 
+  product, 
+  quantity, 
+  onUpdate, 
+  onRemove 
+}: {
+  product: IProduct;
+  quantity: number;
+  onUpdate: (productId: number, count: number) => void;
+  onRemove: (productId: number) => void;
+}) => {
   // Calculate item total on render for display only
   const itemTotal = product.price * quantity;
 
@@ -83,9 +94,11 @@ const CartItem = ({ product, quantity, onUpdate, onRemove }) => {
       className="bg-white shadow-md rounded-lg p-4 flex flex-col sm:flex-row items-center"
     >
       {/* Product thumbnail */}
-      <img
+      <Image
         src={product.imageUrl}
         alt={product.name}
+        width={128}
+        height={128}
         className="w-32 h-32 object-cover mr-4"
       />
 
@@ -152,7 +165,15 @@ const CartItem = ({ product, quantity, onUpdate, onRemove }) => {
  * - totalPrice: subtotal calculated from items
  * - onCheckout: triggers checkout flow
  */
-const OrderSummary = ({ totalItems, totalPrice, onCheckout }) => (
+const OrderSummary = ({ 
+  totalItems, 
+  totalPrice, 
+  onCheckout 
+}: {
+  totalItems: number;
+  totalPrice: number;
+  onCheckout: () => void;
+}) => (
   <div className="bg-white shadow-md rounded-lg p-6 sticky top-4">
     <h2 className="text-xl font-bold mb-4">Order Summary</h2>
 

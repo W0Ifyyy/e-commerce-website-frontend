@@ -21,28 +21,28 @@ export default function SearchPage() {
 
   // fetch when term changes; skip if empty
   useEffect(() => {
-    if (searchTerm) {
-      fetchSearchResults();
-    } else {
-      setIsLoading(false);
+    async function fetchData() {
+      if (!searchTerm) {
+        setIsLoading(false);
+        return;
+      }
+      
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `${baseUrl}/products/search?name=${encodeURIComponent(searchTerm)}`
+        );
+        const data = await response.json();
+        setProductData(data);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  }, [searchTerm]);
-
-  // hit backend search endpoint and store results
-  async function fetchSearchResults() {
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `${baseUrl}/products/search?name=${encodeURIComponent(searchTerm)}`
-      );
-      const data = await response.json();
-      setProductData(data);
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    
+    fetchData();
+  }, [searchTerm, baseUrl]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[90vh] bg-gray-50">

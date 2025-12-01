@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useCart } from "@/utils/CartContext";
 import { ProductPaginationProps } from "@/utils/interfaces";
 import Link from "next/link";
+import Image from "next/image";
 
 // Simple client-side pagination for category products
 export function ProductPagination({ products }: ProductPaginationProps) {
@@ -90,10 +91,11 @@ function CategoryProductCard({
       {/* image links to product details */}
       <Link href={`/products/${id}`} className="w-1/3 h-full flex-shrink-0">
         <div className="h-full w-full relative">
-          <img
+          <Image
             src={imageUrl}
             alt={name}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         </div>
       </Link>

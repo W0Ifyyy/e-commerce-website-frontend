@@ -1,6 +1,7 @@
 "use client";
 
 import { useCart } from "@/utils/CartContext";
+import Image from "next/image";
 
 interface IProductInfo {
   imageUrl: string;
@@ -26,9 +27,11 @@ export default function ProductsInfo({
       {/* Product Image Column */}
       <div className="rounded-lg overflow-hidden bg-white  shadow flex items-center justify-center p-6">
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={name}
+            width={500}
+            height={400}
             className="object-contain max-h-[400px] w-auto transition-transform hover:scale-105"
           />
         ) : (
