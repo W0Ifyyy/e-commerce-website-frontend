@@ -70,6 +70,7 @@ export default function LogInForm() {
       >
         Sign In
       </button>
+      <p className="mt-4 text-center text-gray-600">Forgot your password? Click <Link href="/forgotPassword" className="text-orange-500 hover:underline">here</Link></p>
       <p className="mt-4 text-center text-gray-600">
         Don&apos;t have an account?{" "}
         <Link href="/sign-up" className="text-orange-500 hover:underline">

@@ -14,7 +14,7 @@ export default async function SecuritySettingsPage() {
 
   return (
     <SecurityPageSection
-      userInfo={{ id: user.userId, accessToken: accessToken.value }}
+      userInfo={{ id: user.userId }}
     />
   );
 }

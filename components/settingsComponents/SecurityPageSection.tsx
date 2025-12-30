@@ -8,7 +8,6 @@ export default function SecurityPageSection({
 }: {
   userInfo: {
     id: number;
-    accessToken: string;
   };
 }) {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -34,12 +33,7 @@ export default function SecurityPageSection({
           oldPassword: data.oldPassword,
           newPassword: data.newPassword,
         },
-        {
-          // include access token via cookie header
-          headers: {
-            Cookie: `access_token=${userInfo.accessToken}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
-          },
-        }
+        undefined
       );
 
       if (res.status === 200) {

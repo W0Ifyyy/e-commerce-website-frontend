@@ -28,26 +28,23 @@ export interface BestsellerCarouselProps {
   products: IProduct[];
 }
 
-export interface ICartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-// Make sure to update your CartContextType in interfaces.ts
-export interface CartContextType {
-  cart: ICartItem[];
-  updateCart: () => void;
-  addToCart: (item: ICartItem) => void;
-  removeFromCart: (itemId: number) => void;
-  updateQuantity: (itemId: number, quantity: number) => void;
-  clearCart: () => void;
-}
-
 export interface ProductPaginationProps {
   products: IProduct[];
 }
+
+export type PaginationMeta = {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};
+
+export type PaginatedResponse<T> = {
+  items: T[];
+  meta: PaginationMeta;
+};
 
 export interface IisLoggedIn {
   isLoggedIn: boolean;

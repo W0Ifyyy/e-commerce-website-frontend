@@ -25,7 +25,6 @@ export default async function PreferencesPage() {
         country: userData.country,
         emailNotifications: userData.emailNotifications,
         id: userData.id,
-        accessToken: accessToken.value,
       }}
     />
   );

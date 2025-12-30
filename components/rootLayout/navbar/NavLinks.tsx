@@ -1,9 +1,10 @@
 "use client";
 
-import { useCart } from "@/utils/CartContext";
 import api from "@/lib/axios";
 import Link from "next/link";
 import React from "react";
+import { useAppSelector } from "@/store/hooks";
+import { selectTotalItems } from "@/store/cartSelectors";
 
 export function NavLinks({
   isLoggedIn,
@@ -13,7 +14,7 @@ export function NavLinks({
   username: string | null;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const { cart } = useCart();
+  const totalItems = useAppSelector(selectTotalItems);
 
   // logout then hard refresh to clear client state
   const handleLogout = async () => {
@@ -52,7 +53,7 @@ export function NavLinks({
               />
             </svg>
           </button>
-          <span className="hidden sm:block">{cart.length}</span>
+          <span className="hidden sm:block">{totalItems}</span>
         </Link>
       </li>
 

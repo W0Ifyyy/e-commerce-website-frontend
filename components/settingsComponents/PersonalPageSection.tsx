@@ -13,7 +13,6 @@ export default function PersonalPageSection({
     email: string;
     phone: string;
     id: number;
-    accessToken: string; // passed from server; used to auth the request
   };
 }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -38,8 +37,6 @@ export default function PersonalPageSection({
     phone: string;
   }): Promise<boolean> {
     try {
-      const authCookie = `access_token=${userInfo.accessToken}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`;
-
       const res = await api.put(
         `/user/${userInfo.id}`,
         {
@@ -47,11 +44,7 @@ export default function PersonalPageSection({
           email: data.email,
           phone: data.phone,
         },
-        {
-          headers: {
-            Cookie: authCookie,
-          },
-        }
+        undefined
       );
 
       return res.status === 200;

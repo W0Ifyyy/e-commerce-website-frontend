@@ -2,7 +2,6 @@ import Link from "next/link";
 import React from "react";
 import { SearchBar } from "./navbar/Searchbar";
 import { NavLinks } from "./navbar/NavLinks";
-import { CartProvider } from "@/utils/CartContext";
 
 export default function Navbar({
   isLoggedIn = false,
@@ -22,9 +21,7 @@ export default function Navbar({
         <div className="hidden md:block">
           <SearchBar />
         </div>
-        <CartProvider>
-          <NavLinks isLoggedIn={isLoggedIn} username={username} />
-        </CartProvider>
+        <NavLinks isLoggedIn={isLoggedIn} username={username} />
       </nav>
       <div className="md:hidden w-full bg-neutral-50 shadow shadow-white py-3">
         <SearchBar />

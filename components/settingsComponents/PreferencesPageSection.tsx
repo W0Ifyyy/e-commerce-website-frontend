@@ -12,7 +12,6 @@ export default function PreferencesPageSection({
     country: string;
     emailNotifications: boolean;
     id: number;
-    accessToken: string;
   };
 }) {
   // edit mode toggle
@@ -39,12 +38,7 @@ export default function PreferencesPageSection({
           country: data.country,
           emailNotifications: data.emailNotifications,
         },
-        {
-          // send auth cookie with request
-          headers: {
-            Cookie: `access_token=${userPreferences.accessToken}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
-          },
-        }
+        undefined
       );
       if (res.status === 200) {
         setSuccessMessage("Preferences saved successfully!");

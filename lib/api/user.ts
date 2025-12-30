@@ -12,7 +12,7 @@ export default async function getUser() {
   try {
     const res = await api.get("/auth/profile", {
       headers: {
-        Cookie: `access_token=${accessToken.value}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
+        Cookie: `access_token=${accessToken.value}`,
       },
     });
 
@@ -34,7 +34,7 @@ export async function getUserData(id: string, accessToken: string) {
   try {
     const res = await api.get(`/user/${id}`, {
       headers: {
-        Cookie: `access_token=${accessToken}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
+        Cookie: `access_token=${accessToken}`,
       },
     });
     if (res.status === 200) {

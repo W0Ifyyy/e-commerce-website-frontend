@@ -1,7 +1,8 @@
 import axios from "axios";
+import { getApiBaseUrl } from "./apiBaseUrl";
 
 const api = axios.create({
-  baseURL: process.env.NEST_PUBLIC_API_URL || "http://localhost:5000",
+  baseURL: getApiBaseUrl(),
   headers: {
     "Content-Type": "application/json",
   },

@@ -1,13 +1,16 @@
+"use client";
+
 import { useEffect } from "react";
 import Link from "next/link";
-import { useCart } from "@/utils/CartContext";
+import { useAppDispatch } from "@/store/hooks";
+import { cartActions } from "@/store/cartSlice";
 
 export default function SuccessPageContent() {
-  const { clearCart } = useCart();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    clearCart();
-  }, [clearCart]);
+    dispatch(cartActions.clearCart());
+  }, [dispatch]);
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center p-4 bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-md">

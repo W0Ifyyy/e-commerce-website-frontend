@@ -1,6 +1,6 @@
 import ProductsInfo from "@/components/profilePage/ProductsInfo";
-import { CartProvider } from "@/utils/CartContext";
 import Link from "next/link";
+import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 // Product type definition
 interface Product {
@@ -16,14 +16,13 @@ export default async function ProductPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  // Await params before accessing its properties
   const { id } = await params;
 
   let product: Product | null = null;
   let error: string | null = null;
 
   try {
-    const response = await fetch(`http://localhost:5000/products/${id}`, {
+    const response = await fetch(`${getApiBaseUrl()}/products/${id}`, {
       cache: "no-store",
     });
 
@@ -42,16 +41,20 @@ export default async function ProductPage({
   if (!product) return <div className="container p-4">Product not found</div>;
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-6">
-        <Link
-          href="/products"
-          className="text-orange-300 hover:text-orange-700 flex items-center gap-2 transition-colors"
-        >
-          <span>← Back to all products</span>
-        </Link>
-      </div>
-      <CartProvider>
+    <div className="bg-slate-50 min-h-[90vh]">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mb-6">
+          <Link
+              href="/products"
+              className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:-translate-y-px hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+            >
+              <span aria-hidden className="text-lg leading-none">
+                ←
+              </span>
+              <span>Products</span>
+            </Link>
+        </div>
+
         <ProductsInfo
           imageUrl={product.imageUrl}
           name={product.name}
@@ -59,7 +62,7 @@ export default async function ProductPage({
           price={product.price}
           id={Number(product.id)}
         />
-      </CartProvider>
+      </div>
     </div>
   );
 }

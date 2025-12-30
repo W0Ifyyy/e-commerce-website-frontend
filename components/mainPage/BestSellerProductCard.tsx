@@ -1,5 +1,6 @@
 "use client";
-import { useCart } from "@/utils/CartContext";
+import { useAppDispatch } from "@/store/hooks";
+import { cartActions } from "@/store/cartSlice";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -18,10 +19,10 @@ export default function BestSellerProductCard({
   price,
   imageUrl,
 }: BestSellerProductCardProps) {
-  const { addToCart } = useCart();
+  const dispatch = useAppDispatch();
 
   function handleAddToCart() {
-    addToCart(Number(id));
+    dispatch(cartActions.addToCart({ productId: Number(id) }));
   }
 
   return (

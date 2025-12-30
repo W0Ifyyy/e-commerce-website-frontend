@@ -1,16 +1,35 @@
-import { ProductPaginationProps } from "@/utils/interfaces";
+import { PaginationMeta, ProductPaginationProps } from "@/utils/interfaces";
 import { ProductPagination } from "./ProductPagination";
-import { CartProvider } from "@/utils/CartContext";
 
 // Products section: shows a paginated product list wrapped with cart context
-export default function ProductsSection({ products }: ProductPaginationProps) {
+export default function ProductsSection({
+  products,
+  showTitle = true,
+  title = "Products",
+  paginationMeta,
+  paginationBasePath,
+  paginationQuery,
+}: ProductPaginationProps & {
+  showTitle?: boolean;
+  title?: string;
+  paginationMeta?: PaginationMeta;
+  paginationBasePath?: string;
+  paginationQuery?: Record<string, string | number | undefined>;
+}) {
   return (
     <section className="py-10">
-      <h2 className="text-3xl font-bold text-center mb-6">Products</h2>
-      <CartProvider>
-        {/* client-side pagination + cards */}
-        <ProductPagination products={products} />
-      </CartProvider>
+      {showTitle ? (
+        <h2 className="text-3xl font-bold text-center mb-6 text-slate-900">
+          {title}
+        </h2>
+      ) : null}
+      {/* client-side pagination + cards */}
+      <ProductPagination
+        products={products}
+        meta={paginationMeta}
+        basePath={paginationBasePath}
+        query={paginationQuery}
+      />
     </section>
   );
 }

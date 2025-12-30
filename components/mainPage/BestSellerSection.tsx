@@ -1,6 +1,5 @@
 import BestSellerProductCard from "@/components/mainPage/BestSellerProductCard";
 import { getBestSellers } from "@/services/products";
-import { CartProvider } from "@/utils/CartContext";
 
 interface IProduct {
   id: number;
@@ -36,13 +35,13 @@ export default async function BestsellerSection() {
         ) : error ? (
           <div>Error loading bestsellers.</div>
         ) : (
-          <CartProvider>
+          <>
             {bestsellers
               .slice(0, 6) // Only for now, todo: add bestsellers to the backend
               .map((product) => (
                 <BestSellerProductCard key={product.id} {...product} />
               ))}
-          </CartProvider>
+          </>
         )}
       </div>
     </section>

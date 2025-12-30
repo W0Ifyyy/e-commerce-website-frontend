@@ -1,16 +1,18 @@
 "use client";
 
 import api from "@/lib/axios";
-import { CartProvider, useCart } from "@/utils/CartContext";
 import { IProduct } from "@/utils/interfaces";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { cartActions } from "@/store/cartSlice";
+import { selectCartItems, selectTotalItems } from "@/store/cartSelectors";
 
 /**
  * Top-level wrapper for the cart page.
- * - Provides CartContext to all children
+ * - Uses Redux state for cart items
  * - Accepts auth/user info from parent route
  */
 export default function CartPageContentMain({
@@ -20,12 +22,7 @@ export default function CartPageContentMain({
   isAuthenticated: boolean;
   userId?: string | null;
 }) {
-  return (
-    <CartProvider>
-      {/* Page content is separated so the provider remains tiny */}
-      <CartPageContent isAuthenticated={isAuthenticated} userId={userId} />
-    </CartProvider>
-  );
+  return <CartPageContent isAuthenticated={isAuthenticated} userId={userId} />;
 }
 
 /**
@@ -228,14 +225,9 @@ export function CartPageContent({
   isAuthenticated: boolean;
   userId?: string | null;
 }) {
-  // Cart state and helpers from context
-  const {
-    cart,
-    removeFromCart,
-    updateCartItem,
-    totalItems,
-    calculateTotalPrice,
-  } = useCart();
+  const dispatch = useAppDispatch();
+  const cart = useAppSelector(selectCartItems);
+  const totalItems = useAppSelector(selectTotalItems);
 
   // Local UI state for fetched products and network status
   const [products, setProducts] = useState<IProduct[] | null>(null);
@@ -258,16 +250,17 @@ export function CartPageContent({
         return;
       }
 
+     
       try {
-        // Request product details for the given IDs
-        const response = await api.post("/products/all", {
-          ids: cartIds,
+        const response = await api.get("/products/all", {
+          params: { ids: cartIds.join(",") },
         });
         setProducts(response.data);
       } catch (error) {
         console.error("Failed to fetch products:", error);
         setError("Failed to fetch products");
       }
+
       setLoading(false);
     }
 
@@ -284,9 +277,37 @@ export function CartPageContent({
 
   /**
    * Subtotal across the fetched products.
-   * (calculateTotalPrice comes from CartContext)
+   * Computed locally from Redux cart quantities.
    */
-  const totalPrice = products ? calculateTotalPrice(products) : 0;
+  const totalPrice =
+    products?.reduce((total, product) => {
+      const qty = getItemQuantity(product.id);
+      return total + product.price * qty;
+    }, 0) ?? 0;
+
+  function isAllowedCheckoutRedirect(rawUrl: string): boolean {
+    try {
+      const url = new URL(rawUrl);
+      const isProd = process.env.NODE_ENV === "production";
+
+      // Stripe hosted checkout (common cases)
+      if (url.protocol === "https:") {
+        if (url.hostname === "checkout.stripe.com") return true;
+        if (url.hostname === "pay.stripe.com") return true;
+        if (url.hostname.endsWith(".stripe.com")) return true;
+      }
+
+      // Dev convenience (avoid breaking local testing)
+      if (!isProd && url.protocol === "http:") {
+        if (url.hostname === "localhost") return true;
+        if (url.hostname === "127.0.0.1") return true;
+      }
+
+      return false;
+    } catch {
+      return false;
+    }
+  }
 
   /**
    * Checkout flow:
@@ -331,11 +352,15 @@ export function CartPageContent({
         products: cartItems,
       });
 
-      if (checkoutResponse.data.url) {
-        window.location.href = checkoutResponse.data.url;
+      const redirectUrl = checkoutResponse?.data?.url;
+      if (typeof redirectUrl !== "string" || !isAllowedCheckoutRedirect(redirectUrl)) {
+        throw new Error("Invalid checkout redirect URL");
       }
+
+      window.location.assign(redirectUrl);
     } catch (error) {
       console.error("Checkout error:", error);
+      setError("Checkout failed. Please try again.");
     }
   }
 
@@ -362,8 +387,12 @@ export function CartPageContent({
                   key={product.id}
                   product={product}
                   quantity={getItemQuantity(product.id)}
-                  onUpdate={updateCartItem}
-                  onRemove={removeFromCart}
+                  onUpdate={(productId, count) =>
+                    dispatch(cartActions.updateCartItem({ productId, count }))
+                  }
+                  onRemove={(productId) =>
+                    dispatch(cartActions.removeFromCart({ productId }))
+                  }
                 />
               ))}
             </div>

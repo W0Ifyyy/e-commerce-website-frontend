@@ -25,7 +25,6 @@ export default async function PersonalSettingsPage() {
           email: userData.email,
           phone: userData.phone,
           id: user.userId,
-          accessToken: accessToken.value,
         }}
       />
     </div>

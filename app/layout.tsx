@@ -3,7 +3,8 @@ import "./globals.css";
 import Navbar from "@/components/rootLayout/Navbar";
 import Footer from "@/components/rootLayout/Footer";
 import { cookies } from "next/headers";
-import axios from "axios";
+import api from "@/lib/axios";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "Buyzaar",
@@ -25,9 +26,9 @@ export default async function RootLayout({
   // try to resolve user from backend using the cookie
   if (accessToken) {
     try {
-      const res = await axios.get("http://localhost:5000/auth/profile", {
+      const res = await api.get("/auth/profile", {
         headers: {
-          Cookie: `access_token=${accessToken.value}; HttpOnly=true; SameSite=Lax; Path=/; Secure=true`,
+          Cookie: `access_token=${accessToken.value}`,
         },
       });
       if (res.status === 200) {
@@ -42,9 +43,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar isLoggedIn={isLoggedIn} username={username} />
-        {children}
-        <Footer />
+        <Providers>
+          <Navbar isLoggedIn={isLoggedIn} username={username} />
+          {children}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
