@@ -1,5 +1,7 @@
 "use client";
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
+import { selectCsrfToken } from "@/store/csrfSelector";
+import { useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -11,6 +13,7 @@ export default function SecurityPageSection({
   };
 }) {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -21,11 +24,14 @@ export default function SecurityPageSection({
     confirmPassword: "",
   });
 
+  const csrfToken = useAppSelector(selectCsrfToken);
+  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken }: {};
+
   // call backend to update password
   const updatePassword = async (data: {
     oldPassword: string;
     newPassword: string;
-  }) => {
+  }): Promise<boolean> => {
     try {
       const res = await api.put(
         `/user/changePassword/${userInfo.id}`,
@@ -33,7 +39,9 @@ export default function SecurityPageSection({
           oldPassword: data.oldPassword,
           newPassword: data.newPassword,
         },
-        undefined
+        {
+          headers: csrfHeaders
+        }
       );
 
       if (res.status === 200) {
@@ -44,12 +52,16 @@ export default function SecurityPageSection({
           newPassword: "",
           confirmPassword: "",
         });
+        return true;
       }
+
+      return false;
     } catch (error) {
       console.error("Error changing password:", error);
       setErrorMessage(
         "Failed to change password. Please verify your current password."
       );
+      return false;
     }
   };
 
@@ -105,19 +117,24 @@ export default function SecurityPageSection({
   };
 
   // validate → send request → close editor → show message
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (isSaving) return;
     setErrorMessage("");
     setSuccessMessage("");
 
     if (!validateForm()) return;
 
-    updatePassword({
+    setIsSaving(true);
+    const ok = await updatePassword({
       oldPassword: formData.currentPassword,
       newPassword: formData.newPassword,
     });
 
+    setIsSaving(false);
+
+    if (!ok) return;
+
     setIsChangingPassword(false);
-    // auto-hide success message
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
@@ -182,14 +199,16 @@ export default function SecurityPageSection({
               <button
                 onClick={handleCancel}
                 className="text-gray-500 text-sm font-medium"
+                disabled={isSaving}
               >
                 CANCEL
               </button>
               <button
                 onClick={handleSave}
-                className="text-orange-500 text-sm font-medium"
+                className="text-orange-500 text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={isSaving}
               >
-                SAVE
+                {isSaving ? "SAVING..." : "SAVE"}
               </button>
             </div>
           ) : (

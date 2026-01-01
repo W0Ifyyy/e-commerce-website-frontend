@@ -8,7 +8,7 @@ export default function Navbar({
   username,
 }: {
   isLoggedIn: boolean;
-  username: string;
+  username: string | null;
 }) {
   return (
     <>

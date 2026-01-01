@@ -1,6 +1,8 @@
 "use client";
 
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
+import { selectCsrfToken } from "@/store/csrfSelector";
+import { useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -16,6 +18,7 @@ export default function PreferencesPageSection({
 }) {
   // edit mode toggle
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   // transient UI messages
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -24,12 +27,15 @@ export default function PreferencesPageSection({
   // live form values
   const [formData, setFormData] = useState({ ...originalData });
 
+  const csrfToken = useAppSelector(selectCsrfToken);
+  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken}: {}
+
   // save preferences to API
   const updateDatabase = async (data: {
     currency: string;
     country: string;
     emailNotifications: boolean;
-  }) => {
+  }): Promise<boolean> => {
     try {
       const res = await api.put(
         `/user/${userPreferences.id}`,
@@ -38,14 +44,14 @@ export default function PreferencesPageSection({
           country: data.country,
           emailNotifications: data.emailNotifications,
         },
-        undefined
+        {
+          headers: csrfHeaders
+        }
       );
-      if (res.status === 200) {
-        setSuccessMessage("Preferences saved successfully!");
-      }
+      return res.status === 200;
     } catch (error) {
       console.error("Error saving preferences:", error);
-      setErrorMessage("Failed to save preferences.");
+      return false;
     }
   };
 
@@ -78,20 +84,26 @@ export default function PreferencesPageSection({
   };
 
   // validate → store → update state → notify
-  const handleSave = () => {
-    console.log(userPreferences.currency)
+  const handleSave = async () => {
+    if (isSaving) return;
+
     setErrorMessage("");
     setSuccessMessage("");
 
-    if (!validateForm()) {
+    if (!validateForm()) return;
+
+    setIsSaving(true);
+    const ok = await updateDatabase(formData);
+    setIsSaving(false);
+
+    if (!ok) {
+      setErrorMessage("Failed to save preferences.");
       return;
     }
 
     setOriginalData({ ...formData });
     setIsEditing(false);
-    updateDatabase(formData);
     setSuccessMessage("Preferences updated successfully!");
-
     setTimeout(() => setSuccessMessage(""), 3000);
   };
 
@@ -151,14 +163,16 @@ export default function PreferencesPageSection({
               <button
                 onClick={handleCancel}
                 className="text-gray-500 text-sm font-medium"
+                disabled={isSaving}
               >
                 CANCEL
               </button>
               <button
                 onClick={handleSave}
-                className="text-orange-500 text-sm font-medium"
+                className="text-orange-500 text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+                disabled={isSaving}
               >
-                SAVE
+                {isSaving ? "SAVING..." : "SAVE"}
               </button>
             </div>
           ) : (

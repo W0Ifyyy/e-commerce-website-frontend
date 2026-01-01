@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
 import type { IProduct, PaginatedResponse } from "@/utils/interfaces";
 
 export const getBestSellers = async () => await api.get("/products");

@@ -1,20 +1,22 @@
 "use client";
 
-import api from "@/lib/axios";
 import { IProduct } from "@/utils/interfaces";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { cartActions } from "@/store/cartSlice";
 import { selectCartItems, selectTotalItems } from "@/store/cartSelectors";
+import api from "@/lib/apiClientBrowser";
+import { selectCsrfToken } from "@/store/csrfSelector";
 
 /**
  * Top-level wrapper for the cart page.
  * - Uses Redux state for cart items
  * - Accepts auth/user info from parent route
  */
+
 export default function CartPageContentMain({
   isAuthenticated = false,
   userId = null,
@@ -225,6 +227,11 @@ export function CartPageContent({
   isAuthenticated: boolean;
   userId?: string | null;
 }) {
+  const csrfToken = useAppSelector(selectCsrfToken);
+  const csrfHeaders = useMemo(() => {
+    return csrfToken ? ({ "X-CSRF-Token": csrfToken } as const ) : undefined;
+  }, [csrfToken]);
+
   const dispatch = useAppDispatch();
   const cart = useAppSelector(selectCartItems);
   const totalItems = useAppSelector(selectTotalItems);
@@ -254,6 +261,7 @@ export function CartPageContent({
       try {
         const response = await api.get("/products/all", {
           params: { ids: cartIds.join(",") },
+          headers: csrfHeaders,
         });
         setProducts(response.data);
       } catch (error) {
@@ -265,7 +273,7 @@ export function CartPageContent({
     }
 
     fetchProducts();
-  }, [cart]);
+  }, [cart, csrfToken]);
 
   /**
    * Helper to read quantity for a given product from the cart.
@@ -335,7 +343,7 @@ export function CartPageContent({
       };
 
       // Create order
-      const orderResponse = await api.post("/orders", orderData);
+      const orderResponse = await api.post("/orders", orderData, { headers: csrfHeaders });
       const orderId = orderResponse.data.order.id;
 
       // Prepare items for checkout provider
@@ -346,11 +354,15 @@ export function CartPageContent({
       }));
 
       // Create checkout session and redirect user
-      const checkoutResponse = await api.post("/checkout/finalize", {
-        orderId,
-        userId,
-        products: cartItems,
-      });
+      const checkoutResponse = await api.post(
+        "/checkout/finalize",
+        {
+          orderId,
+          userId,
+          products: cartItems,
+        },
+        { headers: csrfHeaders }
+      );
 
       const redirectUrl = checkoutResponse?.data?.url;
       if (typeof redirectUrl !== "string" || !isAllowedCheckoutRedirect(redirectUrl)) {

@@ -4,7 +4,7 @@ import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
 // Product type definition
 interface Product {
-  id: string;
+  id: number | string;
   name: string;
   price: number;
   description: string;
@@ -40,6 +40,9 @@ export default async function ProductPage({
     return <div className="container p-4 text-red-500">Error: {error}</div>;
   if (!product) return <div className="container p-4">Product not found</div>;
 
+  const numericId =
+    typeof product.id === "number" ? product.id : Number.parseInt(product.id, 10);
+
   return (
     <div className="bg-slate-50 min-h-[90vh]">
       <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
@@ -60,7 +63,7 @@ export default async function ProductPage({
           name={product.name}
           description={product.description}
           price={product.price}
-          id={Number(product.id)}
+          id={Number.isFinite(numericId) ? numericId : Number(id)}
         />
       </div>
     </div>

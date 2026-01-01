@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/rootLayout/Navbar";
 import Footer from "@/components/rootLayout/Footer";
-import { cookies } from "next/headers";
-import api from "@/lib/axios";
 import Providers from "./providers";
+import getUser from "@/lib/api/user";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Buyzaar",
@@ -16,34 +16,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("access_token");
-
-  // default navbar state
-  let username = null;
-  let isLoggedIn = false;
-
-  // try to resolve user from backend using the cookie
-  if (accessToken) {
-    try {
-      const res = await api.get("/auth/profile", {
-        headers: {
-          Cookie: `access_token=${accessToken.value}`,
-        },
-      });
-      if (res.status === 200) {
-        username = res.data.username;
-        isLoggedIn = true;
-      }
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-    }
-  }
+  const cookieStore = await cookies()
+  const { isLoggedIn, username } = await getUser();
+  const csrfToken = cookieStore.get("csrf_token") ?? null;
 
   return (
     <html lang="en">
       <body>
-        <Providers>
+        <Providers csrfToken={csrfToken?.value}>
           <Navbar isLoggedIn={isLoggedIn} username={username} />
           {children}
           <Footer />

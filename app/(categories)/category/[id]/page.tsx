@@ -1,5 +1,5 @@
 import ProductsSection from "@/components/categories/ProductSection";
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
 import type { ICategoryDetails } from "@/utils/interfaces";
 import Link from "next/link";
 

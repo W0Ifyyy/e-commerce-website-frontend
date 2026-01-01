@@ -63,7 +63,7 @@ A modern, responsive e-commerce website built with Next.js 15 and TypeScript. Th
 
 ### State Management & Data
 
-- **React Context API** - Cart and global state
+- **Redux Toolkit** - Cart state management
 - **Axios** - HTTP client for API calls
 - **js-cookie** - Client-side cookie management
 
@@ -143,7 +143,8 @@ npm install
 3. Set up environment variables
 ```bash
 # Create .env file
-NEST_PUBLIC_API_URL=   (backend basic route)
+NEXT_PUBLIC_API_URL=   (backend base URL)
+# (legacy fallback also supported): NEST_PUBLIC_API_URL=
 NEXT_PUBLIC_BASE_URL=  (frontend basic route)
 STRIPE_SECRET_KEY=  (stripe key)
 ```

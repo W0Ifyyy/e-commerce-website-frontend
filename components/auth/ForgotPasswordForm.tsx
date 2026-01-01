@@ -1,6 +1,6 @@
 'use client';
 
-import axios from "@/lib/axios";
+import axios from "@/lib/apiClientBrowser";
 import { useState, type FormEvent } from "react";
 
 export default function ForgotPasswordForm() {

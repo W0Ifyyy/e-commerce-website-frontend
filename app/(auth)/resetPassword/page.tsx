@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
 
 export default function ResetPasswordPage() {
   const sp = useSearchParams();

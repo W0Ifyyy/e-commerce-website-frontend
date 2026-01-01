@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
 
 export const getCategory = async (categoryId: number) =>
   await api.get(`/category/details/${categoryId}`);

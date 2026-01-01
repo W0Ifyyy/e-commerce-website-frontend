@@ -1,10 +1,13 @@
 "use client";
 
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
 import Link from "next/link";
 import React from "react";
-import { useAppSelector } from "@/store/hooks";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectTotalItems } from "@/store/cartSelectors";
+import { cartActions } from "@/store/cartSlice";
+import { selectCsrfToken } from "@/store/csrfSelector";
 
 export function NavLinks({
   isLoggedIn,
@@ -14,21 +17,39 @@ export function NavLinks({
   username: string | null;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+  const [logoutError, setLogoutError] = React.useState<string | null>(null);
+
+  const csrfToken = useAppSelector(selectCsrfToken)
+  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken} : {}
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const totalItems = useAppSelector(selectTotalItems);
 
-  // logout then hard refresh to clear client state
   const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setLogoutError(null);
+    setIsLoggingOut(true);
     try {
       await api.post(
         "/auth/logout",
-        {},
         {
+        },
+        {
+          headers: csrfHeaders,
           withCredentials: true,
         }
       );
-      window.location.reload();
+
+      dispatch(cartActions.clearCart());
+      setIsOpen(false);
+      router.push("/");
+      router.refresh();
     } catch (error) {
       console.error("Error logging out:", error);
+      setLogoutError("Logout failed. Please try again.");
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -97,11 +118,18 @@ export function NavLinks({
                 Settings
               </Link>
               <button
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 hover:cursor-pointer"
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
                 onClick={() => handleLogout()}
+                disabled={isLoggingOut}
               >
-                Logout
+                {isLoggingOut ? "Logging out..." : "Logout"}
               </button>
+
+              {logoutError ? (
+                <div className="px-4 pb-2 pt-1 text-xs text-red-600">
+                  {logoutError}
+                </div>
+              ) : null}
             </div>
           )}
         </li>

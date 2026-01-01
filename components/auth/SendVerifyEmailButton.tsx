@@ -1,6 +1,6 @@
 "use client";
 
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
 import { useState } from "react";
 
 type Status = "idle" | "sending" | "sent" | "error";

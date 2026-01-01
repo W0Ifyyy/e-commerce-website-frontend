@@ -1,6 +1,6 @@
 "use client";
 
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,83 +18,75 @@ export default function SignUpForm() {
     password: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const router = useRouter();
 
-  const validateUsername = () => {
-    if (!user.name || user.name.length < 5) {
-      setError((prevError) => ({
-        ...prevError,
-        username: "Username must be at least 5 characters",
-      }));
-    } else {
-      setError((prevError) => ({
-        ...prevError,
-        username: "",
-      }));
+  function getUsernameError(name: string) {
+    if (!name.trim() || name.trim().length < 5) {
+      return "Username must be at least 5 characters";
     }
-  };
+    return "";
+  }
 
-  const validateEmail = () => {
-    if (!user.email || !/\S+@\S+\.\S+/.test(user.email)) {
-      setError((prevError) => ({
-        ...prevError,
-        email: "Please enter a valid email address",
-      }));
-    } else {
-      setError((prevError) => ({
-        ...prevError,
-        email: "",
-      }));
+  function getEmailError(email: string) {
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
+      return "Please enter a valid email address";
     }
-  };
+    return "";
+  }
 
-  const validatePassword = () => {
+  function getPasswordError(password: string) {
     if (
-      !user.password ||
-      user.password.length < 8 ||
-      !/[A-Z]/.test(user.password) ||
-      !/[a-z]/.test(user.password) ||
-      !/\d/.test(user.password) ||
-      !/[!@#$%^&*(),.?":{}|<>]/.test(user.password)
+      !password ||
+      password.length < 8 ||
+      !/[A-Z]/.test(password) ||
+      !/[a-z]/.test(password) ||
+      !/\d/.test(password) ||
+      !/[!@#$%^&*(),.?":{}|<>]/.test(password)
     ) {
-      setError((prevError) => ({
-        ...prevError,
-        password:
-          "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character",
-      }));
-    } else {
-      setError((prevError) => ({
-        ...prevError,
-        password: "",
-      }));
+      return "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character";
     }
-  };
-  const validateForm = () => {
-    let isError = false;
-    validateUsername();
-    validateEmail();
-    validatePassword();
-    if (error.username || error.email || error.password) {
-      isError = true;
-    }
+    return "";
+  }
 
-    return isError;
-  };
+  function validateAll(nextUser: typeof user) {
+    const nextErrors = {
+      username: getUsernameError(nextUser.name),
+      email: getEmailError(nextUser.email),
+      password: getPasswordError(nextUser.password),
+    };
+    setError(nextErrors);
+    return !(nextErrors.username || nextErrors.email || nextErrors.password);
+  }
 
-  const handleSubmit = () => {
-    if (validateForm()) {
-      return new Error("Form validation failed");
-    }
-    async function submitForm() {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    setSubmitError(null);
+    const ok = validateAll(user);
+    if (!ok) return;
+
+    setIsSubmitting(true);
+    try {
       const results = await api.post("/auth/register", user);
-      console.log(results);
-      if (results.status === 201) router.push("/sign-in");
-      return results;
+      if (results.status === 201) {
+        router.push("/sign-in");
+        router.refresh();
+        return;
+      }
+      setSubmitError("Sign up failed. Please try again.");
+    } catch (err) {
+      console.error("Sign up failed:", err);
+      setSubmitError("Sign up failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-    submitForm();
   };
   return (
-    <form className="w-full max-w-sm bg-white p-6 rounded-lg shadow-md">
+    <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-6 rounded-lg shadow-md">
       <div className="mb-4">
         <label
           htmlFor="username"
@@ -106,12 +98,13 @@ export default function SignUpForm() {
           value={user.name}
           type="text"
           id="username"
+          name="username"
           className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
           placeholder="Username"
           required
           onChange={(e) => setUser({ ...user, name: e.target.value })}
           onBlur={() => {
-            validateUsername();
+            setError((prev) => ({ ...prev, username: getUsernameError(user.name) }));
           }}
         />
       </div>
@@ -126,12 +119,13 @@ export default function SignUpForm() {
           value={user.email}
           type="email"
           id="email"
+          name="email"
           className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
           placeholder="Email"
           required
           onChange={(e) => setUser({ ...user, email: e.target.value })}
           onBlur={() => {
-            validateEmail();
+            setError((prev) => ({ ...prev, email: getEmailError(user.email) }));
           }}
         />
       </div>
@@ -146,21 +140,29 @@ export default function SignUpForm() {
           value={user.password}
           type="password"
           id="password"
+          name="password"
           className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
           placeholder="Password"
           required
           onChange={(e) => setUser({ ...user, password: e.target.value })}
           onBlur={() => {
-            validatePassword();
+            setError((prev) => ({ ...prev, password: getPasswordError(user.password) }));
           }}
         />
       </div>
+
+      {submitError ? (
+        <p className="mb-4 text-sm text-red-600" role="alert">
+          {submitError}
+        </p>
+      ) : null}
+
       <button
-        type="button"
-        className="w-full bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 hover:cursor-pointer transition-colors"
-        onClick={() => handleSubmit()}
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 hover:cursor-pointer transition-colors disabled:opacity-60"
       >
-        Sign Up
+        {isSubmitting ? "Signing up..." : "Sign Up"}
       </button>
       <p className="mt-4 text-center text-gray-600">
         Already have an account?{" "}

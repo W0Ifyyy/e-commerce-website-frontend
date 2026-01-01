@@ -1,6 +1,6 @@
 "use client";
 
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";

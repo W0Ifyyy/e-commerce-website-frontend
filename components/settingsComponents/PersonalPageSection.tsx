@@ -1,6 +1,8 @@
 "use client";
 
-import api from "@/lib/axios";
+import api from "@/lib/apiClientBrowser";
+import { selectCsrfToken } from "@/store/csrfSelector";
+import { useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -9,12 +11,14 @@ export default function PersonalPageSection({
   userInfo,
 }: {
   userInfo: {
-    name: string;
-    email: string;
-    phone: string;
+    name: string | null;
+    email: string | null;
+    phone: string | null; // phone is optional in your app
     id: number;
   };
 }) {
+  const asString = (v: unknown) => (typeof v === "string" ? v : "");
+
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -23,12 +27,15 @@ export default function PersonalPageSection({
 
   // last saved data (to allow cancel)
   const [originalData, setOriginalData] = useState({
-    name: userInfo.name,
-    email: userInfo.email,
-    phone: userInfo.phone,
+    name: asString(userInfo.name),
+    email: asString(userInfo.email),
+    phone: asString(userInfo.phone), // normalize null -> ""
   });
 
   const [formData, setFormData] = useState({ ...originalData });
+
+  const csrfToken = useAppSelector(selectCsrfToken);
+  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken } : {};
 
   // send update to backend; returns true on success
   async function updateDatabase(data: {
@@ -39,12 +46,8 @@ export default function PersonalPageSection({
     try {
       const res = await api.put(
         `/user/${userInfo.id}`,
-        {
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-        },
-        undefined
+        { name: data.name, email: data.email, phone: data.phone },
+        { headers: csrfHeaders }
       );
 
       return res.status === 200;
@@ -55,30 +58,40 @@ export default function PersonalPageSection({
     }
   }
 
-  // minimal validation for name + email
+  // minimal validation for name + email (+ optional phone)
   function validateForm() {
-    if (!formData.name.trim() || formData.name.trim().length < 5) {
+    const name = asString(formData.name).trim();
+    const email = asString(formData.email).trim();
+    const phone = asString(formData.phone).trim();
+
+    if (!name || name.length < 5) {
       setErrorMessage(
         "Name cannot be empty and must be at least 5 characters long!"
       );
       return false;
     }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!emailRegex.test(email)) {
       setErrorMessage("Please enter a valid email address");
       return false;
     }
-    const phoneDigits = formData.phone.replace(/\D/g, "");
-    if (phoneDigits.length !== 9) {
-      setErrorMessage("Phone number must contain exactly 9 digits.");
-      return false;
+
+    // Phone is optional: validate only if user entered something
+    if (phone !== "") {
+      const phoneDigits = phone.replace(/\D/g, "");
+      if (phoneDigits.length !== 9) {
+        setErrorMessage("Phone number must contain exactly 9 digits.");
+        return false;
+      }
     }
+
     return true;
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value ?? "" }));
   }
 
   async function handleSave() {
@@ -88,10 +101,11 @@ export default function PersonalPageSection({
     if (!validateForm()) return;
 
     setIsSaving(true);
+
     const payload = {
-      name: formData.name.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.trim(),
+      name: asString(formData.name).trim(),
+      email: asString(formData.email).trim(),
+      phone: asString(formData.phone).trim(), // can be ""
     };
 
     const ok = await updateDatabase(payload);
@@ -192,7 +206,7 @@ export default function PersonalPageSection({
             <input
               type="text"
               name="name"
-              value={formData.name}
+              value={formData.name ?? ""}
               onChange={handleChange}
               disabled={!isEditing}
               className={`border rounded p-2 w-full ${
@@ -208,7 +222,7 @@ export default function PersonalPageSection({
             <input
               type="email"
               name="email"
-              value={formData.email}
+              value={formData.email ?? ""}
               onChange={handleChange}
               disabled={!isEditing}
               className={`border rounded p-2 w-full ${
@@ -224,7 +238,7 @@ export default function PersonalPageSection({
             <input
               type="tel"
               name="phone"
-              value={formData.phone}
+              value={formData.phone ?? ""}
               onChange={handleChange}
               disabled={!isEditing}
               className={`border rounded p-2 w-full ${

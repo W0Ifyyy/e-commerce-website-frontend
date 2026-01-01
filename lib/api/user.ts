@@ -1,18 +1,18 @@
 import { cookies } from "next/headers";
-import api from "../axios";
+import api from "../apiClientServer";
 
 export default async function getUser() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("access_token");
 
   if (!accessToken) {
-    return { username: null, isLoggedIn: false };
+    return { username: null, isLoggedIn: false, userId: null };
   }
 
   try {
     const res = await api.get("/auth/profile", {
       headers: {
-        Cookie: `access_token=${accessToken.value}`,
+        Cookie: cookieStore.toString()
       },
     });
 
