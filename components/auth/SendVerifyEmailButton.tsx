@@ -1,6 +1,9 @@
 "use client";
 
 import api from "@/lib/apiClientBrowser";
+import { selectCsrfToken } from "@/store/csrfSelector";
+import { useAppSelector } from "@/store/hooks";
+import { headers } from "next/headers";
 import { useState } from "react";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -8,12 +11,15 @@ type Status = "idle" | "sending" | "sent" | "error";
 export default function SendVerifyEmailButton({email}: {email: string}) {
   const [status, setStatus] = useState<Status>("idle");
 
+  const csrfToken = useAppSelector(selectCsrfToken);
+  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken }: {};
+
   const handleSend = async () => {
     if (status === "sending" || status === "sent") return;
 
     setStatus("sending");
     try {
-      await api.post("/user/verifyEmail", { email, emailType: "VERIFY"});
+      await api.post("/user/verifyEmail", { email, emailType: "VERIFY"}, {headers: csrfHeaders});
       setStatus("sent");
     } catch {
       setStatus("error");

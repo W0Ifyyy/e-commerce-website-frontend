@@ -1,208 +1,140 @@
-# Buyzaar E-commerce Frontend
+# Buyzaar e-commerce Frontend 
 
-A modern, responsive e-commerce website built with Next.js 15 and TypeScript. This project delivers a comprehensive shopping experience with intuitive product browsing, seamless checkout, and a user-friendly interface.
+Hey! This is the frontend for my e-commerce project. I spent a lot of time on this and honestly learned so much about Next.js and React along the way. It's built with Next.js 15, TypeScript, Redux and Tailwind CSS. The whole thing connects to my backend API for authentication, products, and payments through Stripe.
 
-## ✨ Features
+## Quick Start
 
-### User Authentication
+First, install the dependencies:
 
-- Secure sign-up and sign-in with validation
-- JWT-based authentication with HTTP-only cookies
-- Protected routes and session management
-- Profile management with user data
-
-### Product Experience
-
-- Category-based product browsing
-- Detailed product pages with descriptions and images
-- Featured bestseller carousel on homepage
-- Product pagination for category views
-- Advanced search functionality with real-time results
-- Product recommendations
-
-### Shopping & Checkout
-
-- Persistent shopping cart using cookies
-- Real-time cart updates across tabs
-- Quantity management for cart items
-- Cart total calculations
-- Stripe payment integration
-- Order creation and tracking
-- Order history with detailed item breakdowns
-
-### User Account Management
-
-- **Profile Settings**: Update personal information (name, email, phone)
-- **Security Settings**: Change password with validation
-- **Preferences**: Manage currency, country, and email notification settings
-- **Order History**: View all past orders with status tracking
-- Member since information display
-
-### Responsive Design
-
-- Mobile-first approach
-- Optimized for all device sizes
-- Fast loading with Next.js App Router
-- Smooth animations and transitions
-- Accessible navigation
-
-## 🛠️ Tech Stack
-
-### Frontend Framework
-
-- **Next.js 15.2.0** - React framework with App Router
-- **React 19.0.0** - UI library
-- **TypeScript 5** - Type safety
-
-### Styling & UI
-
-- **Tailwind CSS 4** - Utility-first CSS framework
-- **Custom animations** - Fade-in, bounce effects
-- **Heroicons** - Icon library
-- **Swiper** - Carousel/slider components
-
-### State Management & Data
-
-- **Redux Toolkit** - Cart state management
-- **Axios** - HTTP client for API calls
-- **js-cookie** - Client-side cookie management
-
-### Payment Processing
-
-- **Stripe 18.5.0** - Secure payment integration
-
-### Development Tools
-
-- **ESLint** - Code linting
-- **PostCSS** - CSS processing
-- **next-client-cookies** - Cookie utilities
-
-## 📁 Project Structure
-
-```
-e-commerce-website-frontend/
-├── app/                          # Next.js App Router pages
-│   ├── (auth)/                  # Authentication routes
-│   │   ├── sign-in/
-│   │   └── sign-up/
-│   ├── (cart)/                  # Shopping cart
-│   ├── (categories)/            # Category pages
-│   ├── (profile)/               # User profile
-│   ├── (search)/                # Search functionality
-│   ├── (settings)/              # User settings
-│   │   ├── personal/
-│   │   ├── preferences/
-│   │   ├── security/
-│   │   └── orders/
-│   ├── (success)/               # Order success page
-│   └── products/                # Product pages
-├── components/                   # React components
-│   ├── auth/                    # Authentication forms
-│   ├── cart/                    # Cart components
-│   ├── categories/              # Category components
-│   ├── mainPage/                # Homepage sections
-│   ├── profilePage/             # Profile components
-│   ├── rootLayout/              # Layout components
-│   ├── settingsComponents/      # Settings pages
-│   └── successPage/             # Success page
-├── lib/                         # Utilities and configs
-│   ├── api/                     # API helper functions
-│   └── axios.ts                 # Axios configuration
-├── services/                    # API service functions
-│   ├── categories.ts
-│   └── products.ts
-├── utils/                       # Utility functions
-│   ├── CartContext.tsx          # Cart state management
-│   ├── displaySinceInfo.ts      # Date formatting
-│   └── interfaces.ts            # TypeScript interfaces
-└── public/                      # Static assets
-```
-
-````
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js (v20 or higher)
-- npm or yarn
-- Backend API running (default: `http://localhost:5000`)
-
-### Installation
-
-1. Clone the repository
-```bash
-git clone <repository-url>
-cd e-commerce-website-frontend
-```
-
-2. Install dependencies
 ```bash
 npm install
 ```
 
-3. Set up environment variables
-```bash
-# Create .env file
-NEXT_PUBLIC_API_URL=   (backend base URL)
-# (legacy fallback also supported): NEST_PUBLIC_API_URL=
-NEXT_PUBLIC_BASE_URL=  (frontend basic route)
-STRIPE_SECRET_KEY=  (stripe key)
+Then set up your environment variables. Create a `.env` file:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+STRIPE_SECRET_KEY=sk_test_xxxxx
 ```
 
-4. Run the development server
+Make sure your backend is running, then:
+
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+Open [http://localhost:3000](http://localhost:3000) -> you should see a frontpage, unless your backend isn't running.
 
-### Build for Production
+## What I Built
+
+Here's what frontend does:
+
+- **Authentication** - Sign up, sign in, forgot password, email verification. All the tokens are handled with httpOnly cookies so it's secure
+- **Product Browsing** - Homepage with a hero section and bestsellers section, category pages with pagination, search(works)
+- **Shopping Cart** - Managed with Redux but also saved to cookies so it survives page refreshes
+- **Checkout** - Stripe integration, users can pay for products and get redirected to a success page
+- **User Settings** - Profile page, change password, preferences (currency, country, email notifications), order history
+
+## Tech Stack
+
+Here's what I used:
+
+- **Next.js 15**,
+- **React 19**,
+- **TypeScript**,
+- **Tailwind CSS**,
+- **Redux Toolkit**,
+- **Axios**,
+- **Stripe**,
+
+## Folder Structure
+
+```
+e-commerce-website-frontend/
+├── app/                    # Next.js App Router pages
+│   ├── (auth)/            # Login, signup, forgot password, etc
+│   ├── (cart)/            # Shopping cart page
+│   ├── (categories)/      # Category listing and individual category
+│   ├── (profile)/         # User profile page
+│   ├── (search)/          # Search results
+│   ├── (settings)/        # All the settings pages
+│   │   ├── personal/      # Update name, email, phone
+│   │   ├── preferences/   # Currency, country, notifications
+│   │   ├── security/      # Change password
+│   │   └── orders/        # Order history
+│   ├── (success)/         # After successful payment
+│   └── products/          # Product pages
+├── components/            # All the React components
+│   ├── auth/              # Login/signup forms
+│   ├── cart/              # Cart stuff
+│   ├── categories/        # Product grids, pagination
+│   ├── mainPage/          # Hero, bestsellers, categories section
+│   ├── profilePage/       # Profile components
+│   ├── rootLayout/        # Navbar, footer
+│   ├── settingsComponents/ # Settings forms
+│   └── successPage/       # Success page content
+├── lib/                   # API clients and utilities
+├── services/              # API service functions
+├── store/                 # Redux store, slices, selectors
+└── utils/                 # Helper functions and interfaces
+```
+
+## How Some Stuff Works
+
+### Cart
+
+The cart is stored in cookies and managed with Redux. When you add something, it updates the store and the cookies. 
+
+### Authentication
+
+Everything goes through httpOnly cookies so JavaScript can't access the tokens directly. The backend handles all the JWT stuff, and the frontend just makes requests. Protected routes redirect to login if you're not authenticated.
+
+### Payments
+
+1. User fills their cart
+2. Clicks checkout
+3. Frontend creates an order through the API
+4. Backend creates a Stripe Checkout Session
+5. User gets redirected to Stripe's payment page
+6. After payment, they land on the success page
+7. Cart gets cleared automatically
+
+### Settings
+
+Settings are split into a few focused pages:
+
+- **Personal** – Update your name, email and phone. You can toggle edit mode, change the fields, and either save or cancel. There’s basic validation for things like email format, name length and phone digits, plus small success/error banners so you know if it actually saved.
+- **Preferences** – Pick your country, preferred currency and whether you want email notifications. Same inline edit pattern: click edit, change the values, save or cancel. Simple validation makes sure you don’t leave important stuff empty.
+- **Orders** – Read‑only list of your past orders and their statuses, accessible from the settings area.
+- **Security** – Dedicated page for changing your password. It checks current password, enforces a strong new password and makes sure both new password fields match before sending anything to the backend.
+
+## Environment Variables
+
+```env
+# Your backend URL
+NEXT_PUBLIC_API_URL=http://localhost:5000
+
+# This frontend's URL
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# Stripe secret key (get it from dashboard.stripe.com)
+STRIPE_SECRET_KEY=sk_test_xxxxx
+```
+
+## Building for Production
 
 ```bash
 npm run build
 npm start
 ```
 
-## 🔑 Key Features Implementation
+## Things I Still Wanna Do
 
-### Cart Management
-- Cookie-based persistence
-- Cross-tab synchronization
-- Optimistic UI updates
-- Quantity controls
+- [ ] Maybe add an admin panel?
+- [ ] Product reviews and ratings
 
-### Authentication Flow
-- Server-side session validation
-- Protected route middleware
-- Automatic redirection
-- Secure cookie handling
+## Bugs? Questions?
 
-### Payment Integration
-- Stripe checkout sessions
-- Order creation workflow
-- Payment success handling
-- Cart cleanup after purchase
+If something's broken or confusing, feel free to open an issue. Im still learning after all!
 
-### Settings Management
-- Inline editing with validation
-- Real-time updates
-- Cancel/save functionality
-- Password change with security rules
-
-## 📝 TODO
-
-- [ ] Settings implementation polish
-- [ ] Consistent styling across all pages
-- [ ] Responsive testing on all devices
-- [ ] Code optimization (remove console.logs)
-- [ ] Enhanced error handling
-- [ ] Admin panel implementation (maybe)
-- [ ] Product rating system (maybe)
-- [ ] Wishlist feature (maybe)
-- [ ] Convert Context to Redux (maybe)
-
-## 🙏 Credits
-
-Created by **W0Ifyy**
-
-````

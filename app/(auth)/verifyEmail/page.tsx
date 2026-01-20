@@ -1,14 +1,19 @@
 "use client";
 
 import api from "@/lib/apiClientBrowser";
+import { selectCsrfToken } from "@/store/csrfSelector";
+import { useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 export default function VerifyEmailPage() {
   const sp = useSearchParams();
   const token = sp.get("token");
   const [verified, setVerified] = useState(false);
+
+  const csrfToken = useAppSelector(selectCsrfToken);
+  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken }: {};
 
   useEffect(() => {
     if (!token) {
@@ -20,7 +25,7 @@ export default function VerifyEmailPage() {
 
     (async () => {
       try {
-        await api.post("/user/verifyEmail/confirm", { token });
+        await api.post("/user/verifyEmail/confirm", { token }, {headers: csrfHeaders});
         if (!cancelled) setVerified(true);
       } catch {
         if (!cancelled) setVerified(false);
