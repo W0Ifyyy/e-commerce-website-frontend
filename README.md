@@ -15,7 +15,6 @@ Then set up your environment variables. Create a `.env` file:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
-STRIPE_SECRET_KEY=sk_test_xxxxx
 ```
 
 Make sure your backend is running, then:
@@ -25,6 +24,8 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) -> you should see a frontpage, unless your backend isn't running.
+
+If auth feels “stuck”, it’s usually cookies/credentials stuff: make sure requests are sending cookies (axios `withCredentials: true`) and your backend CORS origin matches `http://localhost:3000`.
 
 ## What I Built
 
@@ -118,8 +119,8 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 # This frontend's URL
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 
-# Stripe secret key (get it from dashboard.stripe.com)
-STRIPE_SECRET_KEY=sk_test_xxxxx
+# Optional (only if you later add Stripe Elements on the frontend)
+# NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_xxxxx
 ```
 
 ## Building for Production
