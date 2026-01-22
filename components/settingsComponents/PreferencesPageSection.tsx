@@ -1,8 +1,6 @@
 "use client";
 
 import api from "@/lib/apiClientBrowser";
-import { selectCsrfToken } from "@/store/csrfSelector";
-import { useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -27,9 +25,6 @@ export default function PreferencesPageSection({
   // live form values
   const [formData, setFormData] = useState({ ...originalData });
 
-  const csrfToken = useAppSelector(selectCsrfToken);
-  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken}: {}
-
   // save preferences to API
   const updateDatabase = async (data: {
     currency: string;
@@ -43,9 +38,6 @@ export default function PreferencesPageSection({
           preferredCurrency: data.currency,
           country: data.country,
           emailNotifications: data.emailNotifications,
-        },
-        {
-          headers: csrfHeaders
         }
       );
       return res.status === 200;

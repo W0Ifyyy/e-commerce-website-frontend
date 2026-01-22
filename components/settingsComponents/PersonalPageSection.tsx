@@ -1,8 +1,6 @@
 "use client";
 
 import api from "@/lib/apiClientBrowser";
-import { selectCsrfToken } from "@/store/csrfSelector";
-import { useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -34,9 +32,6 @@ export default function PersonalPageSection({
 
   const [formData, setFormData] = useState({ ...originalData });
 
-  const csrfToken = useAppSelector(selectCsrfToken);
-  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken } : {};
-
   // send update to backend; returns true on success
   async function updateDatabase(data: {
     name: string;
@@ -46,8 +41,7 @@ export default function PersonalPageSection({
     try {
       const res = await api.put(
         `/user/${userInfo.id}`,
-        { name: data.name, email: data.email, phone: data.phone },
-        { headers: csrfHeaders }
+        { name: data.name, email: data.email, phone: data.phone }
       );
 
       return res.status === 200;

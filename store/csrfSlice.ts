@@ -6,8 +6,8 @@ type CsrfState = {
   token: string | null;
 };
 
-// Try to hydrate from sessionStorage on initialization
-function getInitialToken(): string | null {
+// Helper to get token from sessionStorage (for hydration)
+function getStoredToken(): string | null {
   if (typeof window === "undefined") return null;
   try {
     return sessionStorage.getItem(CSRF_STORAGE_KEY);
@@ -16,8 +16,22 @@ function getInitialToken(): string | null {
   }
 }
 
+// Helper to persist token to sessionStorage
+function persistToken(token: string | null): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (token) {
+      sessionStorage.setItem(CSRF_STORAGE_KEY, token);
+    } else {
+      sessionStorage.removeItem(CSRF_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 const initialState: CsrfState = {
-  token: null, // Will be hydrated in the reducer or by component
+  token: null, // Will be hydrated by component or login response
 };
 
 const csrfSlice = createSlice({
@@ -26,40 +40,17 @@ const csrfSlice = createSlice({
   reducers: {
     setCsrfToken(state, action: PayloadAction<string | null>) {
       state.token = action.payload ?? null;
-      // Persist to sessionStorage
-      if (typeof window !== "undefined") {
-        try {
-          if (action.payload) {
-            sessionStorage.setItem(CSRF_STORAGE_KEY, action.payload);
-          } else {
-            sessionStorage.removeItem(CSRF_STORAGE_KEY);
-          }
-        } catch {
-          // Ignore storage errors
-        }
-      }
+      persistToken(state.token);
     },
     clearCsrfToken(state) {
       state.token = null;
-      if (typeof window !== "undefined") {
-        try {
-          sessionStorage.removeItem(CSRF_STORAGE_KEY);
-        } catch {
-          // Ignore storage errors
-        }
-      }
+      persistToken(null);
     },
-    // Hydrate from sessionStorage
+    // Hydrate from sessionStorage (called on app mount)
     hydrateCsrfToken(state) {
-      if (typeof window !== "undefined") {
-        try {
-          const storedToken = sessionStorage.getItem(CSRF_STORAGE_KEY);
-          if (storedToken) {
-            state.token = storedToken;
-          }
-        } catch {
-          // Ignore storage errors
-        }
+      const storedToken = getStoredToken();
+      if (storedToken) {
+        state.token = storedToken;
       }
     },
   },

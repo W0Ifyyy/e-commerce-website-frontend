@@ -1,13 +1,14 @@
 "use client";
 
 import api from "@/lib/apiClientBrowser";
+import { clearCsrfToken } from "@/lib/apiClientBrowser";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectTotalItems } from "@/store/cartSelectors";
 import { cartActions } from "@/store/cartSlice";
-import { selectCsrfToken } from "@/store/csrfSelector";
+import { csrfActions } from "@/store/csrfSlice";
 
 export function NavLinks({
   isLoggedIn,
@@ -20,8 +21,6 @@ export function NavLinks({
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const [logoutError, setLogoutError] = React.useState<string | null>(null);
 
-  const csrfToken = useAppSelector(selectCsrfToken)
-  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken} : {}
   const router = useRouter();
   const dispatch = useAppDispatch();
   const totalItems = useAppSelector(selectTotalItems);
@@ -31,16 +30,11 @@ export function NavLinks({
     setLogoutError(null);
     setIsLoggingOut(true);
     try {
-      await api.post(
-        "/auth/logout",
-        {
-        },
-        {
-          headers: csrfHeaders,
-          withCredentials: true,
-        }
-      );
+      await api.post("/auth/logout", {});
 
+      // Clear CSRF token on logout
+      clearCsrfToken();
+      dispatch(csrfActions.clearCsrfToken());
       dispatch(cartActions.clearCart());
       setIsOpen(false);
       router.push("/");

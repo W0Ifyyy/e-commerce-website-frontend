@@ -1,7 +1,5 @@
 "use client";
 import api from "@/lib/apiClientBrowser";
-import { selectCsrfToken } from "@/store/csrfSelector";
-import { useAppSelector } from "@/store/hooks";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -24,9 +22,6 @@ export default function SecurityPageSection({
     confirmPassword: "",
   });
 
-  const csrfToken = useAppSelector(selectCsrfToken);
-  const csrfHeaders = csrfToken ? { "X-CSRF-Token": csrfToken }: {};
-
   // call backend to update password
   const updatePassword = async (data: {
     oldPassword: string;
@@ -38,9 +33,6 @@ export default function SecurityPageSection({
         {
           oldPassword: data.oldPassword,
           newPassword: data.newPassword,
-        },
-        {
-          headers: csrfHeaders
         }
       );
 
