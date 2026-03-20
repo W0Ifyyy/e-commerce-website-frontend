@@ -4,6 +4,7 @@ import Navbar from "@/components/rootLayout/Navbar";
 import Footer from "@/components/rootLayout/Footer";
 import Providers from "./providers";
 import getUser from "@/lib/api/user";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
   title: "Buyzaar",
@@ -15,12 +16,14 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies()
   const { isLoggedIn, username } = await getUser();
+  const csrfToken = cookieStore.get("csrf_token_value") ?? null;
 
   return (
     <html lang="en">
       <body>
-        <Providers>
+        <Providers csrfToken={csrfToken?.value}>
           <Navbar isLoggedIn={isLoggedIn} username={username} />
           {children}
           <Footer />

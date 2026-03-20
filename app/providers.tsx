@@ -5,39 +5,43 @@ import { Provider } from "react-redux";
 import { store } from "@/store/store";
 import { cartActions } from "@/store/cartSlice";
 import { csrfActions } from "@/store/csrfSlice";
-import { setCsrfToken } from "@/lib/apiClientBrowser";
 import { getApiBaseUrl } from "@/lib/apiBaseUrl";
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+interface ProvidersProps {
+  children: React.ReactNode;
+  csrfToken?: string;
+}
+
+export default function Providers({ children, csrfToken }: ProvidersProps) {
   useEffect(() => {
     // Hydrate cart from cookie
     store.dispatch(cartActions.hydrateFromCookie());
 
-    // Always fetch a fresh CSRF token on page load/refresh
-    // This ensures the token matches the current session state
-    async function refreshCsrfToken() {
-      try {
-        const response = await fetch(`${getApiBaseUrl()}/auth/csrf-token`, {
-          method: "GET",
-          credentials: "include",
-        });
+    // Use server-provided CSRF token if available, otherwise fetch fresh
+    if (csrfToken) {
+      store.dispatch(csrfActions.setCsrfToken(csrfToken));
+    } else {
+      async function refreshCsrfToken() {
+        try {
+          const response = await fetch(`${getApiBaseUrl()}/auth/csrf-token`, {
+            method: "GET",
+            credentials: "include",
+          });
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.csrfToken) {
-            // Update both Redux store and sessionStorage
-            store.dispatch(csrfActions.setCsrfToken(data.csrfToken));
-            setCsrfToken(data.csrfToken);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.csrfToken) {
+              store.dispatch(csrfActions.setCsrfToken(data.csrfToken));
+            }
           }
+        } catch {
+          // Silent failure - CSRF will be fetched on next request if needed
         }
-      } catch {
-        // If fetch fails, fall back to hydrating from storage
-        store.dispatch(csrfActions.hydrateCsrfToken());
       }
-    }
 
-    refreshCsrfToken();
-  }, []);
+      refreshCsrfToken();
+    }
+  }, [csrfToken]);
 
   return <Provider store={store}>{children}</Provider>;
 }

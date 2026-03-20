@@ -1,7 +1,6 @@
 "use client";
 
 import api from "@/lib/apiClientBrowser";
-import { clearCsrfToken } from "@/lib/apiClientBrowser";
 import Link from "next/link";
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -33,7 +32,6 @@ export function NavLinks({
       await api.post("/auth/logout", {});
 
       // Clear CSRF token on logout
-      clearCsrfToken();
       dispatch(csrfActions.clearCsrfToken());
       dispatch(cartActions.clearCart());
       setIsOpen(false);

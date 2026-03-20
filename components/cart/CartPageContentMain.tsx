@@ -329,10 +329,8 @@ export function CartPageContent({
         userId: userId,
         items: products?.map((product) => ({
           productId: product.id,
-          quantity: getItemQuantity(product.id), // Include quantity for each product
+          quantity: getItemQuantity(product.id),
         })),
-        totalAmount: totalPrice,
-        status: "PENDING",
       };
 
       // Create order

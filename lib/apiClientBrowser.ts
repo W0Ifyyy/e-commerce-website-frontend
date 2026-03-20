@@ -1,36 +1,12 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import axios from "axios";
 import { getApiBaseUrl } from "./apiBaseUrl";
 
-// Storage key for CSRF token
-const CSRF_TOKEN_KEY = "csrf_token";
-
-// Helper to get CSRF token from sessionStorage
-function getCsrfToken(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    return sessionStorage.getItem(CSRF_TOKEN_KEY);
-  } catch {
-    return null;
-  }
-}
-
-// Helper to set CSRF token in sessionStorage
-export function setCsrfToken(token: string | null): void {
-  if (typeof window === "undefined") return;
-  try {
-    if (token) {
-      sessionStorage.setItem(CSRF_TOKEN_KEY, token);
-    } else {
-      sessionStorage.removeItem(CSRF_TOKEN_KEY);
-    }
-  } catch {
-    // Ignore storage errors
-  }
-}
-
-// Helper to clear CSRF token
-export function clearCsrfToken(): void {
-  setCsrfToken(null);
+function getCookieValue(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const cookies = document.cookie ? document.cookie.split("; ") : [];
+  const found = cookies.find((c) => c.startsWith(`${name}=`));
+  if (!found) return null;
+  return decodeURIComponent(found.substring(name.length + 1));
 }
 
 const api = axios.create({
@@ -41,61 +17,19 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Request interceptor to add CSRF token to unsafe methods
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const method = (config.method ?? "").toUpperCase();
-  const isUnsafeMethod = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
+api.interceptors.request.use((config) => {
+  const method = (config.method ?? "get").toUpperCase();
+  const isUnsafe = method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE";
+  if (!isUnsafe) return config;
 
-  if (isUnsafeMethod) {
-    const csrfToken = getCsrfToken();
-    if (csrfToken) {
-      config.headers.set("X-CSRF-Token", csrfToken);
-    }
-  }
+  const token = getCookieValue("csrf_token_value");
+  if (!token) return config;
 
+  config.headers = config.headers ?? {};
+  if (config.headers["X-CSRF-Token"] || config.headers["x-csrf-token"]) return config;
+
+  config.headers["X-CSRF-Token"] = token;
   return config;
 });
-
-// Response interceptor to extract CSRF token from login/refresh responses
-api.interceptors.response.use(
-  (response) => {
-    // Extract CSRF token from auth responses
-    const csrfToken = response.data?.csrfToken || response.data?.csrf_token;
-    if (csrfToken) {
-      setCsrfToken(csrfToken);
-    }
-    return response;
-  },
-  async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-
-    // If we get a 403 CSRF error and haven't retried yet, try to refresh the token
-    if (
-      error.response?.status === 403 &&
-      !originalRequest._retry &&
-      (error.response?.data as { message?: string })?.message?.toLowerCase().includes("csrf")
-    ) {
-      originalRequest._retry = true;
-
-      try {
-        // Try to get a fresh CSRF token
-        const tokenResponse = await axios.get(`${getApiBaseUrl()}/auth/csrf-token`, {
-          withCredentials: true,
-        });
-
-        const newCsrfToken = tokenResponse.data?.csrfToken;
-        if (newCsrfToken) {
-          setCsrfToken(newCsrfToken);
-          originalRequest.headers.set("X-CSRF-Token", newCsrfToken);
-          return api(originalRequest);
-        }
-      } catch {
-        // If CSRF refresh fails, propagate the original error
-      }
-    }
-
-    return Promise.reject(error);
-  }
-);
 
 export default api;

@@ -4,29 +4,49 @@ import { useState, type FormEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import api from "@/lib/apiClientBrowser";
 
+function getPasswordError(password: string): string {
+  if (
+    !password ||
+    password.length < 8 ||
+    !/[A-Z]/.test(password) ||
+    !/[a-z]/.test(password) ||
+    !/\d/.test(password) ||
+    !/[!@#$%^&*(),.?":{}|<>]/.test(password)
+  ) {
+    return "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+  }
+  return "";
+}
+
 export default function ResetPasswordPage() {
   const sp = useSearchParams();
   const token = sp.get("token"); 
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errors, setErrors] = useState({ password: false, other: false, general: false });
+  const [errors, setErrors] = useState({ password: false, passwordStrength: "", other: false, general: false });
   const [resetSuccess, setResetSuccess] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!token) {
-      setErrors({ password: false, other: true, general: true });
+      setErrors({ password: false, passwordStrength: "", other: true, general: true });
+      return;
+    }
+
+    const passwordStrengthError = getPasswordError(password);
+    if (passwordStrengthError) {
+      setErrors({ password: false, passwordStrength: passwordStrengthError, other: false, general: true });
       return;
     }
 
     if (password !== confirmPassword) {
-      setErrors({ password: true, other: false, general: true });
+      setErrors({ password: true, passwordStrength: "", other: false, general: true });
       return;
     }
 
-    setErrors({ password: false, other: false, general: false });
+    setErrors({ password: false, passwordStrength: "", other: false, general: false });
 
     try {
       await api.post("/user/resetPassword/confirm", {
@@ -38,7 +58,7 @@ export default function ResetPasswordPage() {
       setPassword("");
       setConfirmPassword("");
     } catch {
-      setErrors({ password: false, other: true, general: true });
+      setErrors({ password: false, passwordStrength: "", other: true, general: true });
     }
   };
 
@@ -91,6 +111,7 @@ export default function ResetPasswordPage() {
             />
 
             <div className={!errors.general ? "text-red-600 mt-2 hidden" : "text-red-600 mt-2"}>
+              {errors.passwordStrength && <p>{errors.passwordStrength}</p>}
               <p className={!errors.password ? "hidden" : ""}>Passwords do not match.</p>
               <p className={!errors.other ? "hidden" : ""}>An error occurred. Please try again.</p>
             </div>
