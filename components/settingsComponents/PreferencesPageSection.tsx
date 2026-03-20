@@ -42,7 +42,6 @@ export default function PreferencesPageSection({
       );
       return res.status === 200;
     } catch (error) {
-      console.error("Error saving preferences:", error);
       return false;
     }
   };

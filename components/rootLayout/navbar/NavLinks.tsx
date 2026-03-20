@@ -38,7 +38,6 @@ export function NavLinks({
       router.push("/");
       router.refresh();
     } catch (error) {
-      console.error("Error logging out:", error);
       setLogoutError("Logout failed. Please try again.");
     } finally {
       setIsLoggingOut(false);
@@ -50,7 +49,7 @@ export function NavLinks({
       {/* cart link with icon and item count */}
       <li>
         <Link href="/cart" className="hover:cursor-pointer flex items-center">
-          <button className="hover:cursor-pointer py-1 px-1 transition-colors border border-transparent">
+          <button aria-label="View cart" className="hover:cursor-pointer py-1 px-1 transition-colors border border-transparent">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

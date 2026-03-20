@@ -33,7 +33,6 @@ export default async function ProductPage({
     product = await response.json();
   } catch (err) {
     error = "Failed to fetch product data";
-    console.error(err);
   }
 
   if (error)

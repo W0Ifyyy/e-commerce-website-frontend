@@ -79,7 +79,6 @@ export default function SignUpForm() {
       }
       setSubmitError("Sign up failed. Please try again.");
     } catch (err) {
-      console.error("Sign up failed:", err);
       setSubmitError("Sign up failed. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -192,5 +191,3 @@ export default function SignUpForm() {
     </form>
   );
 }
-
-//TODO: Add a success message after successful registration, and redirect to the login page.

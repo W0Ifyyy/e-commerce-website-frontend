@@ -18,7 +18,6 @@ export default async function BestsellerSection() {
     const response = await getBestSellers();
     bestsellers = response.data;
   } catch (err) {
-    console.error(err);
     error = true;
   } finally {
     loading = false;
@@ -37,7 +36,7 @@ export default async function BestsellerSection() {
         ) : (
           <>
             {bestsellers
-              .slice(0, 6) // Only for now, todo: add bestsellers to the backend
+              .slice(0, 6)
               .map((product) => (
                 <BestSellerProductCard key={product.id} {...product} />
               ))}

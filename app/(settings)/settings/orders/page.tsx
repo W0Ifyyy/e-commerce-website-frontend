@@ -52,7 +52,7 @@ export default async function OrdersPage() {
           </p>
           <Link
             href="/"
-            className="mt-4 inline-block text-orange-600 hover:orange-blue-800 font-medium"
+            className="mt-4 inline-block text-orange-600 hover:text-orange-700 font-medium"
           >
             Browse products
           </Link>

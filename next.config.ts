@@ -23,6 +23,20 @@ const nextConfig: NextConfig = {
         value:
           "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
       },
+      {
+        key: "Content-Security-Policy",
+        value: [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+          "style-src 'self' 'unsafe-inline'",
+          "img-src 'self' data: https://cdn-icons-png.flaticon.com https://images.unsplash.com",
+          "connect-src 'self' http://localhost:5000 https://api.stripe.com",
+          "frame-src https://js.stripe.com https://hooks.stripe.com",
+          "frame-ancestors 'none'",
+          "form-action 'self'",
+          "base-uri 'self'",
+        ].join("; "),
+      },
     ];
 
     const hsts =

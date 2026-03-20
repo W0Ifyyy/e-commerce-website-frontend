@@ -258,7 +258,6 @@ export function CartPageContent({
         });
         setProducts(response.data);
       } catch (error) {
-        console.error("Failed to fetch products:", error);
         setError("Failed to fetch products");
       }
 
@@ -361,7 +360,6 @@ export function CartPageContent({
 
       window.location.assign(redirectUrl);
     } catch (error) {
-      console.error("Checkout error:", error);
       setError("Checkout failed. Please try again.");
     }
   }

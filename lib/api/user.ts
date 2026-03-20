@@ -24,7 +24,6 @@ export default async function getUser() {
       };
     }
   } catch (error) {
-    console.error("Error fetching user profile:", error);
   }
 
   return { username: null, isLoggedIn: false, userId: null };
@@ -42,7 +41,6 @@ export async function getUserData(id: string, accessToken: string) {
     }
     return null;
   } catch (error) {
-    console.error("Error fetching user data:", error);
     return null;
   }
 }

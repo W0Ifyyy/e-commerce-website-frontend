@@ -49,7 +49,6 @@ export default function SecurityPageSection({
 
       return false;
     } catch (error) {
-      console.error("Error changing password:", error);
       setErrorMessage(
         "Failed to change password. Please verify your current password."
       );

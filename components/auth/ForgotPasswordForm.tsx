@@ -19,7 +19,6 @@ export default function ForgotPasswordForm() {
       await axios.post("/user/resetPassword/request", { email: email.trim()});
       setEmailSent(true);
     } catch (error) {
-      console.error("Error sending reset link:", error);
       setErrorMsg("Could not send reset link. Please try again.");
     } finally {
       setLoading(false);

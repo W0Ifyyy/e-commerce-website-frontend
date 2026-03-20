@@ -17,7 +17,6 @@ export default async function CategoryProducts({
     const response = await api.get(`/category/${id}`);
     categoryData = response.data;
   } catch (error) {
-    console.error("Error fetching category data:", error);
   }
 
   if (!categoryData) {

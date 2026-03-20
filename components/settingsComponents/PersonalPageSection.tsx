@@ -46,7 +46,6 @@ export default function PersonalPageSection({
 
       return res.status === 200;
     } catch (error) {
-      console.error("Error saving changes:", error);
       setErrorMessage("Failed to save changes.");
       return false;
     }

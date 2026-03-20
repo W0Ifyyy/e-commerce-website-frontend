@@ -29,7 +29,6 @@ export default function LogInForm() {
       router.push("/");
       router.refresh();
     } catch (error: unknown) {
-      console.error("Login failed:", error instanceof Error ? error.message : "Unknown error");
       setErrorMessage("Login failed. Please check your credentials and try again.");
     } finally {
       setIsSubmitting(false);
