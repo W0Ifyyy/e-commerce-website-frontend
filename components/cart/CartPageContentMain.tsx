@@ -21,7 +21,7 @@ export default function CartPageContentMain({
   userId = null,
 }: {
   isAuthenticated: boolean;
-  userId?: string | null;
+  userId?: number | null;
 }) {
   return <CartPageContent isAuthenticated={isAuthenticated} userId={userId} />;
 }
@@ -224,7 +224,7 @@ export function CartPageContent({
   userId = null,
 }: {
   isAuthenticated: boolean;
-  userId?: string | null;
+  userId?: number | null;
 }) {
   const dispatch = useAppDispatch();
   const cart = useAppSelector(selectCartItems);

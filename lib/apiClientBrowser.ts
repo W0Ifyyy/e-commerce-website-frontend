@@ -33,7 +33,9 @@ api.interceptors.request.use((config) => {
 });
 
 let isRefreshing = false;
-let refreshQueue: Array<() => void> = [];
+// Each queued entry holds both resolve and reject so failed refreshes
+// properly propagate errors to all waiting requests instead of hanging.
+let refreshQueue: Array<{ resolve: () => void; reject: (err: unknown) => void }> = [];
 
 api.interceptors.response.use(
   (response) => response,
@@ -46,8 +48,8 @@ api.interceptors.response.use(
       !originalRequest.url?.includes("/auth/refresh")
     ) {
       if (isRefreshing) {
-        return new Promise<void>((resolve) => {
-          refreshQueue.push(resolve);
+        return new Promise<void>((resolve, reject) => {
+          refreshQueue.push({ resolve, reject });
         }).then(() => api(originalRequest));
       }
 
@@ -57,7 +59,7 @@ api.interceptors.response.use(
       try {
         await api.post("/auth/refresh", {});
         isRefreshing = false;
-        refreshQueue.forEach((cb) => cb());
+        refreshQueue.forEach(({ resolve }) => resolve());
         refreshQueue = [];
 
         // Pick up the new CSRF token issued alongside the new access token
@@ -67,13 +69,14 @@ api.interceptors.response.use(
         }
 
         return api(originalRequest);
-      } catch {
+      } catch (refreshError) {
         isRefreshing = false;
+        refreshQueue.forEach(({ reject }) => reject(refreshError));
         refreshQueue = [];
         if (typeof window !== "undefined") {
           window.location.href = "/sign-in";
         }
-        return Promise.reject(error);
+        return Promise.reject(refreshError);
       }
     }
 

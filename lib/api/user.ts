@@ -23,7 +23,9 @@ export default async function getUser() {
         userId: res.data.userId,
       };
     }
-  } catch (error) {
+  } catch {
+    // Token present but profile fetch failed (expired, network error, etc.)
+    // Fall through to unauthenticated state — client will trigger refresh via interceptor.
   }
 
   return { username: null, isLoggedIn: false, userId: null };
