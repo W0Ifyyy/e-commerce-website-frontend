@@ -1,6 +1,11 @@
+import { redirect } from "next/navigation";
+import getUser from "@/lib/api/user";
 import SignUpForm from "@/components/auth/SignUpForm";
 
-export default function SignUpPage() {
+export default async function SignUpPage() {
+  const { isLoggedIn } = await getUser();
+  if (isLoggedIn) redirect("/");
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[90vh] bg-gray-50">
       <h1 className="text-3xl font-bold mb-6">Sign Up</h1>
