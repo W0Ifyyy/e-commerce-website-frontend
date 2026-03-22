@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   images: {
     remotePatterns: [
       {
@@ -30,7 +31,7 @@ const nextConfig: NextConfig = {
           "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
           "style-src 'self' 'unsafe-inline'",
           "img-src 'self' data: https://cdn-icons-png.flaticon.com https://images.unsplash.com",
-          "connect-src 'self' http://localhost:5000 https://api.stripe.com",
+          `connect-src 'self' http://localhost:5000 ${process.env.NEXT_PUBLIC_API_URL || ''} https://api.stripe.com`,
           "frame-src https://js.stripe.com https://hooks.stripe.com",
           "frame-ancestors 'none'",
           "form-action 'self'",

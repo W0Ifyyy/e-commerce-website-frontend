@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Buyzaar | Profile",
-  description: "Profile section",
+  title: "Profile",
+  description: "View and manage your Buyzaar profile.",
 };
 
 export default async function ProfileLayout({

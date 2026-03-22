@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Buyzaar | Settings",
-  description: "Manage your account settings",
+  title: "Settings",
+  description: "Manage your Buyzaar account settings.",
 };
 
 export default async function ProfileLayout({
