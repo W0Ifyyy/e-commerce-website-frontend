@@ -1,4 +1,6 @@
-# Buyzaar e-commerce Frontend 
+# Buyzaar e-commerce Frontend
+
+**Live demo:** [buyzaar.store](https://www.buyzaar.store)
 
 Hey! This is the frontend for my e-commerce project. I spent a lot of time on this and honestly learned so much about Next.js and React along the way. It's built with Next.js 15, TypeScript, Redux and Tailwind CSS. The whole thing connects to my backend API for authentication, products, and payments through Stripe.
 
@@ -129,6 +131,17 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 npm run build
 npm start
 ```
+
+## Deployment
+
+The app is deployed on AWS:
+
+- Containerized with **Docker** (multi-stage build, Next.js standalone output)
+- Container image stored in **Amazon ECR**
+- Running on **ECS Fargate** (serverless containers)
+- **Application Load Balancer** with SSL termination
+- SSL certificate via **AWS ACM**
+- Custom domain: [buyzaar.store](https://www.buyzaar.store)
 
 ## Things I Still Wanna Do
 
