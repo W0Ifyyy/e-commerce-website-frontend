@@ -21,7 +21,7 @@ export default function CartPageContentMain({
   userId = null,
 }: {
   isAuthenticated: boolean;
-  userId?: string | null;
+  userId?: number | null;
 }) {
   return <CartPageContent isAuthenticated={isAuthenticated} userId={userId} />;
 }
@@ -224,7 +224,7 @@ export function CartPageContent({
   userId = null,
 }: {
   isAuthenticated: boolean;
-  userId?: string | null;
+  userId?: number | null;
 }) {
   const dispatch = useAppDispatch();
   const cart = useAppSelector(selectCartItems);
@@ -236,9 +236,12 @@ export function CartPageContent({
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // Stable key: only the sorted IDs — quantity changes don't trigger re-fetch
+  const cartIdKey = cart.map((i) => i.id).sort().join(",");
+
   /**
    * Fetch products for IDs currently in the cart.
-   * Early-return when cart is empty to avoid a request.
+   * Only re-runs when the set of product IDs changes, not on quantity changes.
    */
   useEffect(() => {
     async function fetchProducts() {
@@ -251,7 +254,6 @@ export function CartPageContent({
         return;
       }
 
-     
       try {
         const response = await api.get("/products/all", {
           params: { ids: cartIds.join(",") },
@@ -265,7 +267,8 @@ export function CartPageContent({
     }
 
     fetchProducts();
-  }, [cart]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartIdKey]);
 
   /**
    * Helper to read quantity for a given product from the cart.
